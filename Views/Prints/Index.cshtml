@@ -1,0 +1,46 @@
+﻿@model IEnumerable<PrintBed.Models.Print>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                Creator
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id"> @Html.DisplayFor(modelItem => item.Name) </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Creator.Name)
+            </td>
+            <td>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+

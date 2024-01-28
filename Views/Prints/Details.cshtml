@@ -1,0 +1,204 @@
+﻿@model PrintBed.Models.PrintDetailPage
+
+@{
+    ViewData["Title"] = "Details";
+}
+<div id="drop-zone-fullpage">
+    <div class="d-flex justify-content-center">
+
+        <div id="beforeDrop" class="loading-content">Drop Files to Upload</div>
+
+        <div id="afterDrop" style="width:500px; visibility: hidden;">
+            <div class="progress" role="progressbar" style="width:500px">
+                <div id="progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%">75%</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<h1>@Html.DisplayFor(model => model.Print.Name)</h1>
+
+<div>
+    <h4>Print Details</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Print.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Print.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Print.PrintInstructions)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Print.PrintInstructions)
+        </dd>
+    </dl>
+    <hr />
+</div>
+
+<div class="row mb-2">
+    <div class="col-2">
+        <h4>Print Files</h4>
+    </div>
+    <div class="col-10 text-end">
+        <a class="btn btn-success btn-sm" onclick="showFilePick();" >+</a>        
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input class="disabled" type='file' id="uploadedFile" name="uploadedFile" style="display:none" />
+                <input type="hidden" id="printId" name="printId" value="@Model?.Print.Id" />                
+            </form>
+    </div>
+</div>
+<div class="row mb-2">
+    <div class="col">
+        <nav>
+            <ul class="pagination pagination-sm justify-content-center">
+                <li class="page-item">
+                    <a class="page-link @(Model.currentPage<=1 ? "disabled" : "") " href="/Prints/Details/@(Model.Print.Id)?page=@(Model.currentPage-1)">Previous</a>
+                </li>
+                @for (int i = 1; i <= Model.totalPages; i++)
+                {
+                    <li class="page-item"><a class="page-link @(Model.currentPage==i ? "disabled" : "")" href="/Prints/Details/@(Model.Print.Id)?page=@(i)">@i</a></li>
+                }
+                <li class="page-item">
+                    <a class="page-link @(Model.currentPage>=Model.totalPages ? "disabled" : "") " href="/Prints/Details/@(Model.Print.Id)?page=@(Model.currentPage+1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<div class="row row-cols-4 gy-4">
+    @foreach (PrintFile item in Model.Files)
+    {
+        <div class="col">
+            <div class="card" style="width: 19rem;">
+                @if (item.FileType?.PreviewType == "Model Viewer")
+                {
+                    <div data-modelviewer="true" data-modelviewer-path="@item.FilePath" class="card-img-top"></div>
+                }
+                else if(item.FileType?.PreviewType == "Image")
+                {
+                    <img src="@item.FilePath" class="card-img-top" />
+                }
+                <div class="card-body">
+                    <h6 class="card-title text-truncate">@item.DisplayName</h6>
+                    <p class="card-text">@item.Description</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><img src="@item.FileType?.ImagePath" class="img-icon ms-1" alt="@item.FileType?.Name" title="@item.FileType?.Name" /> @item.FileExtension @(Math.Round(item.FileSize / 1000000, 2)) MB</li>
+                </ul>
+                <div class="card-body">
+                    <a class="card-link btn btn-secondary btn-sm" asp-action="Edit" asp-controller="PrintFiles" data-edit="@item.Id"><img src="/img/pencil.png" class="img-icon-sm" alt="Edit" /></a>
+                    <a class="card-link" asp-action="Details" asp-controller="PrintFiles" asp-route-id="@item.Id">Details</a>
+                    <a class="card-link" asp-action="Delete" asp-controller="PrintFiles" asp-route-id="@item.Id">Delete</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Print.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+@section Scripts {
+    <script type="module" src="/js/ModelViewer.js"></script>
+    <script>
+
+        $(document).ready(function () {           
+
+        });
+
+
+        
+        var dropZone = document.getElementById('drop-zone-fullpage');
+        dropZone.style.visibility = "hidden";
+        var fileInput = document.getElementById('uploadedFile');
+        var form = document.getElementById('uploadForm');
+        var beforeDrop = document.getElementById('beforeDrop'); 
+        var afterDrop = document.getElementById('afterDrop'); 
+        var progress = document.getElementById('progress');        
+                
+        function allowDrag(e) {
+            if (true) {  // Test that the item being dragged is a valid one this currently allows ALL files
+                e.dataTransfer.dropEffect = 'copy';
+                e.preventDefault();
+            }
+        }
+        function handleDrop(e) {
+            e.preventDefault();            
+            fileInput.files = e.dataTransfer.files;
+            uploadFile();
+        }
+        function showFilePick() {
+            console.log('clicked');
+            fileInput.click();
+        }
+
+        window.addEventListener('dragenter', function (e) {
+            dropZone.style.visibility = "visible";
+        });
+        dropZone.addEventListener('dragenter', allowDrag);
+        dropZone.addEventListener('dragover', allowDrag);
+        dropZone.addEventListener('dragleave', function(e) {
+            dropZone.style.visibility = "hidden";
+        });
+        dropZone.addEventListener('drop', handleDrop);
+                    
+        fileInput.addEventListener('change', function(e){
+            uploadFile();
+        });
+
+        function uploadFile(){
+            var recordIdInput = document.getElementById('printId');            
+            
+            //show dropzone and show afterDrop and hide before drop
+            dropZone.style.visibility = "visible";
+            afterDrop.style.visibility = "visible";
+            beforeDrop.style.visibility = "hidden";
+
+            // Increase the timeout for the form submission
+            form.timeout = 0; // 0 means no timeout
+
+            // Submit the form asynchronously
+            var xhr = new XMLHttpRequest();
+
+            //progressBar.style.display = 'initial';
+
+            xhr.upload.addEventListener('progress', function (event) {
+                if (event.lengthComputable) {
+                    var percentComplete = (event.loaded / event.total) * 100;
+                    progress.style.width = percentComplete+"%";
+                    progress.innerHTML = Math.round(percentComplete) + "%";
+                }
+            });
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    // Handle the response from the server
+                    if (xhr.status === 200) {
+                        console.log("File uploaded successfully!");
+
+                        location.reload();
+
+                    } else {
+                        console.error("Error uploading file!");
+                    }
+                }
+            };
+
+            xhr.open('POST', '/PrintFiles/FileUpload', true);
+            xhr.send(new FormData(form));
+        }
+
+    </script>
+}
+
+
+
