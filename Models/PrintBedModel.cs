@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace PrintBed.Models
 {
@@ -8,6 +9,12 @@ namespace PrintBed.Models
         public List<PrintFile> Files { get; set; }
         public int totalPages { get; set; } = 1;
         public int currentPage { get; set; } = 1;
+    }
+
+    public class SettingsPage
+    {
+        public List<Category> Categories { get; set; }
+        public List<Creator> Creators { get; set; }
     }
 
     public class Category
@@ -46,7 +53,30 @@ namespace PrintBed.Models
         [Display(Name = "Print Instructions")]
         public string? PrintInstructions { get; set; }      
         
+        public DateTime? Created { get; set; }
+        public DateTime? LastModified { get; set; }
+
         public ICollection<PrintFile> PrintFiles { get; } = new List<PrintFile>();
+
+        public string? TagString { get; set; }
+        public ICollection<PrintTag> PrintTags { get; } = new List<PrintTag>();
+
+    }
+
+    public class PrintTag
+    {
+        public string Id { get; set; } //printID+"#"+TagId
+        public string? PrintId { get; set; }
+        public Print? Print { get; set; }
+        public string? TagId { get; set; }
+        public Tag? Tag { get; set; }
+    }
+
+    public class Tag
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public ICollection<PrintTag> PrintTags { get; } = new List<PrintTag>();
     }
 
     public class PrintFile
@@ -63,6 +93,8 @@ namespace PrintBed.Models
         public FileType? FileType { get; set; }
         public string? PrintId { get; set; }
         public Print? Print { get; set; }
+        public DateTime? Created { get; set; }
+        public DateTime? LastModified { get; set; }
     }
     public class FileType
     {

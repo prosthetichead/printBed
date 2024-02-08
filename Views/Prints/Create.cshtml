@@ -21,7 +21,7 @@
                 <label asp-for="CategoryId" class="control-label"></label>
                 <div class="input-group">
                     <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
-                    <button class="btn btn-outline-success" type="button" id="btnAddCategory" >+</button>
+                    <button class="btn btn-outline-success" type="button" id="btnAddCategory" data-bs-toggle="modal" data-bs-target="#categoryModal">+</button>
                 </div>
             </div>
 
@@ -50,114 +50,16 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-<div id="creatorModal" class="modal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add New Creator</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="creatorForm">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="creatorFormName">Creator Name</label>
-                        <input type="text" name="name" id="creatorFormName" placeholder="Creator Name" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="categoryFormName">Creator Image</label>
-                        <input type="file" name="image" id="creatorFormImage" class="form-control" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="submitCreatorForm">Create Creator</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<div id="categoryModal" class="modal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add New Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="categoryForm">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="categoryFormName">Category Name</label>
-                        <input type="text" name="name" id="categoryFormName" placeholder="Category Name" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="categoryFormName">Category Image</label>
-                        <input type="file" name="image" id="categoryFormImage" class="form-control" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="submitCategoryForm">Create Category</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+
+
+
+<partial name="Modal_simpleEditModal" />
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
 
-        $("#submitCreatorForm").click(function () {
-            var name = $('#creatorFormName').val();
-            var formData = new FormData();
-            if ($('#creatorFormImage').length > 0) {
-                formData.append('image', $('#creatorFormImage')[0].files[0]);
-            }
-            formData.append('name', name);
-
-            $.ajax({
-                url: '/Creators/Create',
-                type: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data);
-                    $('#CreatorId').append($('<option/>', {
-                        value: data.id,
-                        text: data.name
-                    }));
-                    $("#CreatorId").val(data.id).change();
-                }
-            });
-        });
-
-        $("#submitCategoryForm").click(function () {
-            var name = $('#categoryFormName').val();
-            var formData = new FormData();
-            if ($('#categoryFormImage').length > 0) {
-                formData.append('image', $('#categoryFormImage')[0].files[0]);
-            }
-            formData.append('name', name);
-
-            $.ajax({
-                url: '/Categories/Create',
-                type: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data);
-                    $('#CategoryId').append($('<option/>', {
-                        value: data.id,
-                        text: data.name
-                    }));
-                    $("#CategoryId").val(data.id).change();
-                }
-            });
-        });
+       
     </script>
 }

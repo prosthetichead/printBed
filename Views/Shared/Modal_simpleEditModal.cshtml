@@ -1,0 +1,33 @@
+﻿
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<div id="simpleEditModal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="simpleEditModal-title" class="modal-title">
+                    TITLE HERE!
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="simpleEditModal-form">
+                <input type="hidden" name="id" id="simpleEditModal-id" />
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="creatorFormName">Name</label>
+                        <input type="text" name="name" id="simpleEditModal-name" placeholder="Name" class="form-control" />
+                    </div>
+                    <div id="simpleEditModal-fileInputGroup" class="form-group">
+                        <label for="categoryFormName">Image</label>
+                        <input type="file" name="image" id="simpleEditModal-file" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="simpleEditModal-ok">OK</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

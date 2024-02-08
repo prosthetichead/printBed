@@ -1,8 +1,187 @@
-﻿@{
+﻿@model IEnumerable<PrintBed.Models.Print>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container rounded-2 border mb-2 p-2">
+    <h5>Filters</h5>
+    <div class="row">        
+        <form>
+            <div class="row row-cols-3">
+                <div class="col">
+                    <div class="form-group">
+                        <label class="control-label">Search</label>
+                        <input type="text" class="form-control" name="search" />
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="form-group">
+                        <label class="control-label">Categories</label>                
+                        <select id="categories-select" name="categories" class="form-select" multiple asp-items="ViewBag.Categories"></select>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="form-group">
+                        <label class="control-label">Creators</label>
+                        <select id="creators-select" name="creators" multiple asp-items="ViewBag.Creators"></select>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="form-group">
+                        <label class="control-label">Tags</label>
+                        <select id="tags-select" name="tags" multiple asp-items="ViewBag.Tags"></select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row">
+                        <label class="control-label">Sort By</label>
+                        <div class="col">
+                            <select id="sort-select" name="sort" asp-items="@ViewBag.SortList"></select>
+                        </div>
+                        <div class="col">
+                            <select id="direction-select" name="direction" asp-items="ViewBag.DirectionList"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-cols-3">
+                <div class="col"></div>
+                <div class="col"></div>
+                <div class="col text-center align-middle">
+                    <button type="submit" class="btn btn-primary m-2">Apply Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div> 
+
+<div class="container mb-1 p-2">   
+<div class="row row-cols-4 g-3">
+    @foreach (Print item in Model)
+    {
+            <div class="col">
+                <div class="card" style="width: 19rem;">
+                    <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            @if (item.PrintFiles.Where(w => w.FileType.PreviewType == "Image").Count() > 0)
+                            {
+                                @foreach (PrintFile file in item.PrintFiles)
+                                {
+                                    if (file.FileType?.PreviewType == "Image")
+                                    {
+                                        <div class="carousel-item active">
+                                            <img src="@file.FilePath" class="d-block w-100 object-fit-scale border rounded" alt="@file.DisplayName">
+                                        </div>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <div class="carousel-item active">
+                                    <img src="/img/no-images.png" class="d-block w-100" alt="No Preview Images">
+                                </div>
+                            }
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>                
+                <div class="card-body">
+                    <h6 class="card-title text-truncate">@item.Name</h6>
+                    <p class="card-text">@item.Description</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                        <li class="list-group-item text-center">
+                            <span class="badge"> <img src="@item.Category?.ImagePath" class="img-icon-sm me-2" alt="@item.Category?.Name" title="@item.Category?.Name" /> @item.Category.Name </span>
+                            <span class="badge"> <img src="@item.Creator?.ImagePath" class="img-icon-sm me-2" alt="@item.Creator?.Name" title="@item.Creator?.Name" /> @item.Creator.Name </span>
+                        </li>
+                        <li class="list-group-item text-center">
+                            <span class="badge"> 
+                                <img src="/img/hard-disk.png" class="img-icon-sm me-2"/> @item.PrintFiles.Count() Files / @Math.Round( item.PrintFiles.Sum(s=>s.FileSize/1000000)) MB </span>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="btn-group" role="group">
+                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Edit" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/pencil.png" class="img-icon-sm me-2" alt="Edit" /> Edit</span> </a>
+                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Details" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/folder.png" class="img-icon-sm me-2" alt="Edit" /> Open Print</span></a>
+                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Edit" /> Delete</span></a>
+                            </div>
+                        </li>
+                </ul>
+            </div>
+        </div>
+    }
 </div>
+    <div class="row mt-2">
+        <div class="col align-content-end text-end float-end">
+            <nav class="float-end">
+                <ul class="pagination pagination-sm ">
+                    <li class="page-item">
+                        <a href="javascript:void(0)" class="page-link @(ViewBag.CurrentPage<=1 ? "disabled" : "") pagination-page" data-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                    </li>
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item"><a href="javascript:void(0)" class="page-link @(ViewBag.CurrentPage==i ? "disabled" : "") pagination-page" data-page="@i">@i</a></li>
+                    }
+                    <li class="page-item">
+                        <a href="javascript:void(0)" class="page-link @(ViewBag.CurrentPage>=ViewBag.TotalPages ? "disabled" : "") pagination-page" data-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        $(".pagination-page").click(function () {
+            let page = $(this).data('page');
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', page);
+            window.location.href = url.href;
+        });
+
+
+        new SlimSelect({
+            select: '#categories-select',
+            settings: {
+                allowDeselect: true,
+                closeOnSelect: false,
+            }
+        });
+
+        new SlimSelect({
+            select: '#creators-select',
+            settings: {
+                allowDeselect: true,
+                closeOnSelect: false,
+            }
+        });
+
+        new SlimSelect({
+            select: '#tags-select',
+            settings: {
+                allowDeselect: true,
+                closeOnSelect: false,
+            }
+        });
+
+        new SlimSelect({
+            select: '#sort-select',            
+        });
+        new SlimSelect({
+            select: '#direction-select',
+        });
+        
+
+    </script>
+}

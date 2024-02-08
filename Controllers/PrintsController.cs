@@ -19,13 +19,6 @@ namespace PrintBed.Controllers
             _context = context;
         }
 
-        // GET: Prints
-        public async Task<IActionResult> Index()
-        {
-            var prints = _context.Print.Include(m => m.Category).Include(m => m.Creator);
-             return View(await prints.ToListAsync());
-        }
-
         // GET: Prints/Details/5
         public async Task<IActionResult> Details(string id, [FromQuery(Name = "page")] int page = 1)
         {            
@@ -52,6 +45,7 @@ namespace PrintBed.Controllers
             SelectList FileTypesList = new SelectList(_context.FileType, "Id", "Name", "0");      
             
             ViewData["FileTypesList"] = FileTypesList;
+            ViewData["Referer"] = Request.Headers["Referer"];
 
             return View(printDetailPage);
         }
@@ -71,14 +65,14 @@ namespace PrintBed.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Description,PrintInstructions,CreatorId,CategoryId")] Print print)
         {
-            string Id = Guid.NewGuid().ToString(); 
+            string Id = IDGen.GetBase36(8); 
             print.Id = Id;
 
             if (ModelState.IsValid)
             {
                 _context.Add(print);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", new { id = print.Id });
             }
 
             return View(print);
@@ -169,7 +163,7 @@ namespace PrintBed.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index","Home");
         }
 
         private bool PrintExists(string id)

@@ -51,6 +51,41 @@ namespace PrintBed.Controllers
             creator.Name = name;
             creator.Id = IDGen.GetBase62(6);
 
+            creator.ImagePath = await SaveImage(image, creator);
+
+            _context.Add(creator);
+            await _context.SaveChangesAsync();
+
+            return Json(creator);
+        }
+
+        // POST: Creators/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        public async Task<JsonResult> Edit(string id, string name, IFormFile image)
+        {
+            var creator = _context.Creator.Where(w => w.Id == id).FirstOrDefault();
+            if(creator==null)
+            {
+                return new JsonResult(NotFound());
+            }
+            creator.Name = name;
+
+            var imgPath = await SaveImage(image, creator);
+            if (!string.IsNullOrEmpty(imgPath))
+            {
+                creator.ImagePath = imgPath;
+            }
+
+            _context.Update(creator);
+            await _context.SaveChangesAsync();
+
+            return Json(creator);
+        }
+             
+        private async Task<string> SaveImage(IFormFile image, Creator creator)
+        {
             if (image != null && image.Length > 0)
             {
                 string ext = Path.GetExtension(image.FileName);
@@ -59,87 +94,13 @@ namespace PrintBed.Controllers
                 {
                     await image.CopyToAsync(fileStream);
                 }
-                creator.ImagePath = "/img/" + fileName;
+                return "/img/" + fileName;
             }
-
-            _context.Add(creator);
-            await _context.SaveChangesAsync();
-
-            return Json(creator);
-        }
-
-        // GET: Creators/Edit/5
-        public async Task<IActionResult> Edit(string id)
-        {
-            if (id == null || _context.Creator == null)
-            {
-                return NotFound();
-            }
-
-            var creator = await _context.Creator.FindAsync(id);
-            if (creator == null)
-            {
-                return NotFound();
-            }
-            return View(creator);
-        }
-
-        // POST: Creators/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Icon")] Creator creator)
-        {
-            if (id != creator.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(creator);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CreatorExists(creator.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(creator);
-        }
-
-        // GET: Creators/Delete/5
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (id == null || _context.Creator == null)
-            {
-                return NotFound();
-            }
-
-            var creator = await _context.Creator
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (creator == null)
-            {
-                return NotFound();
-            }
-
-            return View(creator);
+            return "";
         }
 
         // POST: Creators/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             if (_context.Creator == null)
@@ -153,7 +114,7 @@ namespace PrintBed.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Ok();
         }
 
         private bool CreatorExists(string id)

@@ -1,0 +1,80 @@
+﻿@model PrintBed.Models.SettingsPage
+@{
+    ViewData["Title"] = "Settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Settings</h1>
+
+<div class="row">
+    <div class="col">
+        <h3>Creators</h3>
+    </div>
+    <div class="col text-end"><a class="btn btn-success btn-sm simpleEditModal-btn" data-action="create" data-controller="Creators" data-title="Add New Creator" data-id="new">Add New Creator</a></div>
+</div>
+<div class="mb-5 container">
+    <div class="row">
+        <div class="col-1 border">Image</div>
+        <div class="col-8 border">Name</div>
+        <div class="col-2 border">Number of Prints</div>
+        <div class="col-1 border"></div>
+     </div>
+    @foreach(var creator in Model.Creators)
+    {
+        <div class="row">
+            <div class="col-1 border text-center"><img class="img-icon m-1" src="@creator.ImagePath" /></div>
+            <div class="col-8 border">
+                @creator.Name
+            </div>
+            <div class="col-2 border">@creator.Prints.Count</div>
+            <div class="col-1 border">
+                @if (creator.Id != "0")
+                {
+                    <button type="button" class="btn btn-sm btn-link delete-btn" data-controller="Creators" data-id="@creator.Id"><img class="img-icon-sm" src="~/img/garbage.png" /> </button>
+                }
+                <button type="button" class="btn btn-sm btn-link simpleEditModal-btn" data-action="edit" data-controller="Creators" data-title="Edit Creator @creator.Name" data-id="@creator.Id" data-name="@creator.Name"><img class="img-icon-sm" src="~/img/pencil.png" /></button>
+            </div>
+         </div>
+    }
+</div>
+
+<div class="row">
+    <div class="col">
+        <h3>Categories</h3>
+    </div>
+    <div class="col text-end"><a class="btn btn-success btn-sm  simpleEditModal-btn" data-action="create" data-controller="Categories" data-title="Add New Category" data-id="new">Add New Category</a></div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-1 border">Image</div>
+        <div class="col-8 border">Name</div>
+        <div class="col-2 border">Number of Prints</div>
+        <div class="col-1 border"></div>
+    </div>
+    @foreach(var category in Model.Categories)
+    {
+        <div class="row">
+            <div class="col-1 border text-center"><img class="img-icon m-1" src="@category.ImagePath" /></div>
+            <div class="col-8 border">
+                @category.Name
+            </div>
+            <div class="col-2 border">@category.Prints.Count</div>
+            <div class="col-1 border">
+                @if (category.Id != "0")
+                {
+                    <button class=" btn delete-btn" data-controller="Categories" data-id="@category.Id"><img class="img-icon-sm" src="~/img/garbage.png" /></button>
+                }
+                <button type="button" class="btn btn-sm btn-link simpleEditModal-btn" data-action="edit" data-controller="Categories" data-title="Edit Creator @category.Name" data-name="@category.Name" data-id="@category.Id"><img class="img-icon-sm" src="~/img/pencil.png" /></button>
+            </div>
+        </div>
+    }
+</div>
+
+<partial name="Modal_simpleEditModal" />
+
+@section Scripts {
+    <script>
+
+
+    </script>
+}
