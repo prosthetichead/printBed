@@ -8,6 +8,45 @@
 
 //Create Creator Modal
 
+$(".newTag-btn").click(function () {
+    var updateSelectId = $(this).data('update');
+    var textBoxId = $(this).data('text');
+    var textBox = $(textBoxId);
+    var updateSelect = $(updateSelectId);
+
+    console.log(textBoxId);
+
+    var formData = new FormData();
+    formData.append('name', textBox.val());
+
+    $.ajax({
+        url: '/Tags/Create',
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        dataType: 'json',
+        success: function (data) {
+            console.log(data);
+            if (updateSelect.length > 0) {
+
+                let simpleSelect = document.querySelector(updateSelectId).slim;
+                var selectData = simpleSelect.getData();
+                if (selectData.some(item => item.value === data.id)) {
+                    console.log('The value already exists.');
+                } else {
+                    selectData.push({ text: data.name, value: data.id });
+                    simpleSelect.setData(selectData);
+                }
+
+                var values = simpleSelect.getSelected();
+                values.push(data.id);
+                simpleSelect.setSelected(values);            
+            }
+        }
+    });
+
+});
 
 $(".simpleEditModal-btn").click(function () {
     //

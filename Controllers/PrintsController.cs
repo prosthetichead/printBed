@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PrintBed.Helpers;
 using PrintBed.Models;
 
 namespace PrintBed.Controllers
@@ -53,8 +54,9 @@ namespace PrintBed.Controllers
         // GET: Prints/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name");
-            ViewData["CreatorId"] = new SelectList(_context.Creator, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(_context.Category.OrderBy(o => o.Name), "Id", "Name");
+            ViewData["CreatorId"] = new SelectList(_context.Creator.OrderBy(o => o.Name), "Id", "Name");
+            ViewData["Tags"] = new SelectList(_context.Tag.OrderBy(o=>o.Name), "Id", "Name");
             return View();
         }
 
@@ -63,10 +65,26 @@ namespace PrintBed.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,PrintInstructions,CreatorId,CategoryId")] Print print)
+        public async Task<IActionResult> Create([Bind("Name,Description,PrintInstructions,CreatorId,CategoryId")] Print print, List<string> tags)
         {
-            string Id = IDGen.GetBase36(8); 
+            string Id = "new";
+            while (Id == "new")
+            {
+                Id = IDGen.GetBase36(8);
+                if(_context.Print.Any(o => o.Id == Id))
+                {
+                    Id = "new";
+                }                
+            }
             print.Id = Id;
+            print.TagString = string.Join(",",tags);
+
+            //create printtags
+            foreach(var tag in tags)
+            {
+                PrintTag printTag = new PrintTag() { Id = Id+"#"+tag, PrintId = Id, TagId = tag};
+                _context.Add(printTag);
+            }
 
             if (ModelState.IsValid)
             {
@@ -137,13 +155,14 @@ namespace PrintBed.Controllers
                 return NotFound();
             }
 
-            var print = await _context.Print
+            var print = await _context.Print.Include(i=>i.PrintFiles)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (print == null)
             {
                 return NotFound();
             }
 
+            ViewData["Referer"] = Request.Headers["Referer"];
             return View(print);
         }
 
@@ -157,9 +176,17 @@ namespace PrintBed.Controllers
                 return Problem("Entity set 'DatabaseContext.Prints'  is null.");
             }
             var print = await _context.Print.FindAsync(id);
+            
             if (print != null)
             {
+                var printFiles = _context.PrintFile.Where(w=>w.PrintId == id);
+                foreach (var file in printFiles)
+                {
+                    System.IO.File.Delete(file.FilePath);
+                    _context.PrintFile.Remove(file);
+                }
                 _context.Print.Remove(print);
+                
             }
             
             await _context.SaveChangesAsync();

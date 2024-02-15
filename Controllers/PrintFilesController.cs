@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
+using PrintBed.Helpers;
 using PrintBed.Models;
 
 namespace PrintBed.Controllers
@@ -70,18 +71,7 @@ namespace PrintBed.Controllers
         //    return View(printFile);
         //}
 
-        private string SafeString(string str)
-        {
-            str = str.Trim();
-            str = str.ToLower();
-            str = str.Replace(' ', '-');
-            
-            List<char> invalidFileNameChars = Path.GetInvalidFileNameChars().ToList<char>();
-            invalidFileNameChars.AddRange("!*'();:@&=+$,/?%#[]");
-            // Builds a string out of valid chars and an _ for invalid ones
-            var safeStr = new string(str.Select(ch => invalidFileNameChars.Contains(ch) ? '_' : ch).ToArray());
-            return safeStr;
-        }
+
 
         // POST: PrintFiles/FileUpload
         [HttpPost]
@@ -97,24 +87,39 @@ namespace PrintBed.Controllers
 
             //setup and save a print file record for the file
             PrintFile printFile = new PrintFile();
-            printFile.Id = IDGen.GetBase62(6);
+
+            var Id = "new";
+            while(Id == "new")
+            {
+                Id = IDGen.GetBase36(8);
+                if(_context.PrintFile.Any(w => w.Id == Id))
+                {
+                    Id = "new";
+                }                
+            }
+
+            printFile.Id = Id;
             printFile.PrintId = printId;
             printFile.DisplayName = uploadedFile.FileName;
-            printFile.FileName = SafeString(uploadedFile.FileName);
+            printFile.FileName = Helpers.SafeString.Convert(uploadedFile.FileName);
             printFile.FileTypeId = "0";
             printFile.FileSize = uploadedFile.Length;
 
-            string filePath = Path.Combine("/print-files", SafeString(print.Category.Name), SafeString(print.Creator.Name), SafeString(print.Name));
+            string filePath = Path.Combine("/print-files", Helpers.SafeString.Convert(print.Category.Name), Helpers.SafeString.Convert(print.Creator.Name), Helpers.SafeString.Convert(print.Name));
             Directory.CreateDirectory(filePath);
             filePath = Path.Combine(filePath, printFile.FileName);
             printFile.FilePath = filePath;
             string ext = Path.GetExtension(filePath).Replace(".", "");
             printFile.FileExtension = ext;
-
-            var fileType = _context.FileType.Where(w => w.Extensions != null && w.Extensions.Contains(ext)).FirstOrDefault();
+            
+            var fileType = _context.FileType.Where(w => w.Extensions != null && w.Extensions.ToLower().Contains(ext)).FirstOrDefault();
             if (fileType != null)
             {
                 printFile.FileTypeId = fileType.Id;
+            }
+            else
+            {
+                printFile.FileTypeId = _context.FileType.Where(w=>w.Id == "0").FirstOrDefault().Id;
             }
 
             using (Stream fileStream = new FileStream(filePath, FileMode.Create))
@@ -148,7 +153,7 @@ namespace PrintBed.Controllers
             }
 
             var printFile = await _context.PrintFile
-                .Include(p => p.Print)
+                .Include(p => p.Print).Include(p=>p.FileType)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (printFile == null)
             {

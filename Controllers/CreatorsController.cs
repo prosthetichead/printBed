@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PrintBed.Helpers;
 using PrintBed.Models;
 
 namespace PrintBed.Controllers
@@ -49,7 +50,17 @@ namespace PrintBed.Controllers
         {
             var creator = new Creator();
             creator.Name = name;
-            creator.Id = IDGen.GetBase62(6);
+
+            var Id = "new";
+            while(Id == "new")
+            {
+                Id = IDGen.GetBase36(8);
+                if(_context.Creator.Any(m => m.Id == Id))
+                {
+                    Id = "new";
+                }
+            }
+            creator.Id = Id;
 
             creator.ImagePath = await SaveImage(image, creator);
 

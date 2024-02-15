@@ -20,8 +20,8 @@
             <div class="form-group">
                 <label asp-for="CategoryId" class="control-label"></label>
                 <div class="input-group">
-                    <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
-                    <button class="btn btn-outline-success" type="button" id="btnAddCategory" data-bs-toggle="modal" data-bs-target="#categoryModal">+</button>
+                    <select id="CategorySelect" asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
+                    <button class="btn btn-outline-success simpleEditModal-btn" type="button" id="btnAddCategory" data-action="create" data-controller="Categories" data-title="Add New Category" data-id="new" data-updateSelectId="CategorySelect">+</button>
                 </div>
             </div>
 
@@ -29,7 +29,7 @@
                 <label asp-for="CreatorId" class="control-label"></label>
                 <div class="input-group">
                     <select id="CreatorId" asp-for="CreatorId" class="form-select" asp-items="ViewBag.CreatorId"></select>                    
-                    <button class="btn btn-outline-success" type="button" id="btnAddCreator" data-bs-toggle="modal" data-bs-target="#creatorModal">+</button>
+                    <button class="btn btn-outline-success simpleEditModal-btn" type="button" id="btnAddCreator" data-action="create" data-controller="Creators" data-title="Add New Creator" data-id="new" data-updateSelectId="CreatorId">+</button>
                 </div>
             </div>
 
@@ -37,6 +37,15 @@
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Tags</label>
+                <select id="tags-select" name="tags" class="form-select" multiple asp-items="ViewBag.Tags"></select>
+                <div class="input-group">
+                    <input type="text" id="tags-newtagtext" placeholder="Add New Tag"/>
+                    <button class="btn btn-outline-success newTag-btn" type="button" id="tags-newtagbtn" data-update="#tags-select" data-text="#tags-newtagtext">Add</button>
+                </div>
             </div>
 
             <div class="form-group">
@@ -60,6 +69,15 @@
 
     <script>
 
-       
+        new SlimSelect({
+            select: '#tags-select',
+            settings: {
+                allowDeselect: true,
+                closeOnSelect: false,
+            }
+        });
+
+
+
     </script>
 }

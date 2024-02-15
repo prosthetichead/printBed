@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace PrintBed.Models
+namespace PrintBed.Helpers
 {
     public static class IDGen
     {
@@ -27,6 +27,13 @@ namespace PrintBed.Models
 
             return sb.ToString();
         }
+
+        public static string GetBase64(string source)
+        {
+            var textBytes = Encoding.UTF8.GetBytes(source);
+            var base64String = System.Convert.ToBase64String(textBytes);
+            return base64String;
+        }
     }
-    
+
 }

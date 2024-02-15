@@ -116,6 +116,10 @@
                                     {
                                         <img src="@item.FilePath" class="card-img-top object-fit-scale border rounded" />
                                     }
+                                    else
+                                    {
+                                        <img src="@item.FileType?.ImagePath" class="card-img-top object-fit-scale border rounded" />
+                                    }
                                     <div class="card-body">
                                         <h6 class="card-title text-truncate">@item.DisplayName</h6>
                                         <p class="card-text">@item.Description</p>
@@ -126,7 +130,7 @@
                                             <div class="btn-group" role="group">
                                                 <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Edit" asp-controller="PrintFiles" asp-route-id="@item.Id"><span class="badge"><img src="/img/pencil.png" class="img-icon-sm me-2" alt="Edit" /> Edit</span> </a>
                                                 <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Download" asp-controller="PrintFiles" asp-route-id="@item.Id"><span class="badge"><img src="/img/download.png" class="img-icon-sm me-2" alt="Download" /> Download</span></a>
-                                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Delete" /> Delete</span></a>
+                                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="PrintFiles" asp-route-id="@item.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Delete" /> Delete</span></a>
                                             </div>
                                         </li>
                                     </ul>
