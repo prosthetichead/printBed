@@ -5,14 +5,14 @@
 }
 
 <h1>Settings</h1>
-
-<div class="row">
-    <div class="col">
-        <h3>Creators</h3>
-    </div>
-    <div class="col text-end"><a class="btn btn-success btn-sm simpleEditModal-btn" data-action="create" data-controller="Creators" data-title="Add New Creator" data-id="new">Add New Creator</a></div>
-</div>
 <div class="mb-5 container">
+
+    <div class="row">
+        <div class="col">
+            <h3>Creators</h3>
+        </div>
+        <div class="col text-end"><a class="btn btn-success btn-sm simpleEditModal-btn" data-action="create" data-controller="Creators" data-title="Add New Creator" data-id="new">Add New Creator</a></div>
+    </div>
     <div class="row">
         <div class="col-1 border">Image</div>
         <div class="col-8 border">Name</div>
@@ -38,13 +38,13 @@
     }
 </div>
 
-<div class="row">
-    <div class="col">
-        <h3>Categories</h3>
+<div class="mb-5 container">
+    <div class="row">
+        <div class="col">
+            <h3>Categories</h3>
+        </div>
+        <div class="col text-end"><a class="btn btn-success btn-sm  simpleEditModal-btn" data-action="create" data-controller="Categories" data-title="Add New Category" data-id="new">Add New Category</a></div>
     </div>
-    <div class="col text-end"><a class="btn btn-success btn-sm  simpleEditModal-btn" data-action="create" data-controller="Categories" data-title="Add New Category" data-id="new">Add New Category</a></div>
-</div>
-<div class="container">
     <div class="row">
         <div class="col-1 border">Image</div>
         <div class="col-8 border">Name</div>
@@ -69,6 +69,32 @@
         </div>
     }
 </div>
+
+<div class="mb-5 container">
+    <div class="row">
+        <div class="col">
+            <h3>Tags</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-9 border">Name</div>
+        <div class="col-2 border">Number of Prints</div>
+        <div class="col-1 border"></div>
+    </div>
+    @foreach (var tag in Model.Tags)
+    {
+        <div class="row">
+            <div class="col-9 border">
+                @tag.Name
+            </div>
+            <div class="col-2 border">@tag.PrintTags.Count</div>
+            <div class="col-1 border">
+                <button class=" btn delete-btn" data-controller="Tags" data-id="@tag.Id"><img class="img-icon-sm" src="~/img/garbage.png" /></button>
+            </div>
+        </div>
+    }
+</div>
+
 
 <partial name="Modal_simpleEditModal" />
 

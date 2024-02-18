@@ -15,6 +15,7 @@ namespace PrintBed.Models
     {
         public List<Category> Categories { get; set; }
         public List<Creator> Creators { get; set; }
+        public List<Tag> Tags { get; set; }
     }
 
     public class Category

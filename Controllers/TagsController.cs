@@ -32,5 +32,20 @@ namespace PrintBed.Controllers
 
             return Json(tag);
         }
+
+        [HttpPost]
+        public async Task<JsonResult> Delete(string id)
+        {
+            var tag = await _context.Tag.FindAsync(id);
+            if (tag != null)
+            {
+                var printtags = _context.PrintTag.Where(w => w.TagId == id);
+                _context.PrintTag.RemoveRange(printtags);
+                _context.Tag.Remove(tag);
+                await _context.SaveChangesAsync();
+            }
+
+            return Json(Ok());  
+        }
     }
 }

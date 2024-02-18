@@ -110,27 +110,18 @@ namespace PrintBed.Controllers
             return "";
         }
 
-        // POST: Creators/Delete/5
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        [HttpPost]
+        public async Task<JsonResult> Delete(string id)
         {
-            if (_context.Creator == null)
-            {
-                return Problem("Entity set 'DatabaseContext.Creator'  is null.");
-            }
             var creator = await _context.Creator.FindAsync(id);
             if (creator != null)
             {
                 _context.Creator.Remove(creator);
+                await _context.SaveChangesAsync();
             }
-            
-            await _context.SaveChangesAsync();
-            return Ok();
+
+            return Json(Ok());
         }
 
-        private bool CreatorExists(string id)
-        {
-          return (_context.Creator?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
     }
 }

@@ -119,41 +119,17 @@ namespace PrintBed.Controllers
             return View(category);
         }
 
-        // GET: Categories/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        [HttpPost]
+        public async Task<JsonResult> Delete(string id)
         {
-            if (id == null || _context.Category == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _context.Category
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
-        }
-
-        // POST: Categories/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            if (_context.Category == null)
-            {
-                return Problem("Entity set 'DatabaseContext.Category'  is null.");
-            }
             var category = await _context.Category.FindAsync(id);
             if (category != null)
             {
                 _context.Category.Remove(category);
+                await _context.SaveChangesAsync();
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return Json(Ok());
         }
 
         private bool CategoryExists(string id)

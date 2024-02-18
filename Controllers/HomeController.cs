@@ -26,14 +26,18 @@ namespace PrintBed.Controllers
             var settingsPage = new SettingsPage();
             var categories = _context.Category.Include(i=>i.Prints);
             var creators = _context.Creator.Include(i => i.Prints);
+            var tags = _context.Tag.Include(i => i.PrintTags);
 
             settingsPage.Categories = await categories.ToListAsync();
             settingsPage.Creators = await creators.ToListAsync();
+            settingsPage.Tags = await tags.ToListAsync();
 
             return View(settingsPage);
         }
 
         public async Task<IActionResult> Index(
+            [FromQuery(Name = "tags")] List<string> tags,
+            [FromQuery(Name = "categories")] List<string> categories,
             [FromQuery(Name = "creators")] List<string> creators,
             [FromQuery(Name = "page")] int page = 1,
             [FromQuery(Name = "search")] string search = "",            
@@ -44,9 +48,11 @@ namespace PrintBed.Controllers
             int itemsPerPage = 12;
             int totalPages = 0;
 
-            var prints = _context.Print.Include(m => m.Category).Include(m => m.Creator).Include(m=>m.PrintFiles).ThenInclude(m=>m.FileType)
+            var prints = _context.Print.Include(m => m.Category).Include(m => m.Creator).Include(m=>m.PrintFiles).ThenInclude(m=>m.FileType).Include(m=>m.PrintTags).ThenInclude(m=> m.Tag)
                 .Where(w => 
                     ((creators.Count()>0 && creators.Contains(w.CreatorId)) || creators.Count() == 0)  &&
+                    ((categories.Count()>0 && categories.Contains(w.CategoryId)) || categories.Count() == 0) &&
+                    ((tags.Count()>0 && w.PrintTags.Any(y=> tags.Contains(y.TagId))) || tags.Count() == 0) && 
                     ((!string.IsNullOrEmpty(search) && (w.Name.ToLower().Contains(search.ToLower()) || w.TagString.ToLower().Contains(search.ToLower()))) || string.IsNullOrEmpty(search))
                 );
             prints = prints.OrderBy(sort + " " + direction);
@@ -60,13 +66,13 @@ namespace PrintBed.Controllers
             ViewData["CurrentPage"] = page+1;
             ViewData["TotalPages"] = totalPages;
 
-            MultiSelectList Categories = new MultiSelectList(_context.Category, "Id", "Name");
+            MultiSelectList Categories = new MultiSelectList(_context.Category, "Id", "Name", categories);
             ViewData["Categories"] = Categories;
 
             MultiSelectList Creators = new MultiSelectList(_context.Creator, "Id", "Name", creators);
             ViewData["Creators"] = Creators;
 
-            SelectList Tags = new SelectList(_context.Tag, "Id", "Name");
+            MultiSelectList Tags = new MultiSelectList(_context.Tag, "Id", "Name", tags);
             ViewData["Tags"] = Tags;
 
             SelectList SortList = new SelectList(new List<SelectListItem>() {
