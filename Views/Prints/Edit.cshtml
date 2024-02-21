@@ -4,41 +4,105 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>Print</h4>
+<h1>Edit Print @Model.Name</h1>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+<form asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" name="referer" value="@ViewBag.Referer" />
+
+    <div class="row row-cols-2">            
+        <div class="col">
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+        </div>
+        <div class="col">
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <input asp-for="Description" class="form-control" maxlength="128" />
                 <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
+            </div> 
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
             <div class="form-group">
                 <label asp-for="PrintInstructions" class="control-label"></label>
-                <input asp-for="PrintInstructions" class="form-control" />
+                <textarea asp-for="PrintInstructions" class="form-control"></textarea>
                 <span asp-validation-for="PrintInstructions" class="text-danger"></span>
             </div>
+        </div>
+    </div>
+    <div class="row row-cols-2">
+        <div class="col">
+            <div class="form-group">
+                <label asp-for="CreatorId" class="control-label"></label>
+                <div class="input-group">
+                    <select id="CreatorId" asp-for="CreatorId" class="form-select" asp-items="ViewBag.CreatorId"></select>
+                    <button class="btn btn-outline-success simpleEditModal-btn" type="button" id="btnAddCreator" data-action="create" data-controller="Creators" data-title="Add New Creator" data-id="new" data-update="#CreatorId">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <div class="input-group">
+                    <select id="CategorySelect" asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
+                    <button class="btn btn-outline-success simpleEditModal-btn" type="button" id="btnAddCategory" data-action="create" data-controller="Categories" data-title="Add New Category" data-id="new" data-update="#CategorySelect">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row"> 
+        <div class="col">
+            <div class="form-group">
+                <label class="control-label">Tags</label>
+                <div class="input-group">
+                    <select id="tags-select" class="form-select" name="tags" style="width: 65%" multiple asp-items="ViewBag.Tags"></select>
+                    <input type="text" class="form-control" id="tags-newtagtext" placeholder="Add New Tag" />
+                    <button class="btn btn-outline-success newTag-btn" type="button" id="tags-newtagbtn" data-update="#tags-select" data-text="#tags-newtagtext">Add</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
-        </form>
+        
     </div>
-</div>
-
+</form>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
+<partial name="Modal_simpleEditModal" />
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+
+        new SlimSelect({
+            select: '#tags-select',
+            settings: {
+                allowDeselect: true,
+                closeOnSelect: false,
+            }
+        });
+
+
+
+    </script>
 }

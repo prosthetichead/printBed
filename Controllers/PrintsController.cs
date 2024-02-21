@@ -78,13 +78,8 @@ namespace PrintBed.Controllers
             }
             print.Id = Id;
             print.TagString = string.Join(",",tags);
+            UpsertTags(Id, tags);
 
-            //create printtags
-            foreach(var tag in tags)
-            {
-                PrintTag printTag = new PrintTag() { Id = Id+"#"+tag, PrintId = Id, TagId = tag};
-                _context.Add(printTag);
-            }
 
             if (ModelState.IsValid)
             {
@@ -104,11 +99,19 @@ namespace PrintBed.Controllers
                 return NotFound();
             }
 
-            var print = await _context.Print.FindAsync(id);
+            var print = await _context.Print.Include(i=>i.PrintTags).Where(w=>w.Id == id).FirstOrDefaultAsync();
+            
             if (print == null)
             {
                 return NotFound();
             }
+
+            ViewData["Referer"] = Request.Headers["Referer"];
+
+            ViewData["CategoryId"] = new SelectList(_context.Category.OrderBy(o => o.Name), "Id", "Name", print.CategoryId);
+            ViewData["CreatorId"] = new SelectList(_context.Creator.OrderBy(o => o.Name), "Id", "Name", print.CreatorId); ;
+            ViewData["Tags"] = new MultiSelectList(_context.Tag.OrderBy(o => o.Name), "Id", "Name", print.PrintTags.Select(s=>s.TagId));
+
             return View(print);
         }
 
@@ -117,34 +120,36 @@ namespace PrintBed.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Description,PrintInstructions")] Print print)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Description,PrintInstructions,CreatorId,CategoryId")] Print print, List<string> tags, string referer)
         {
             if (id != print.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            //
+            print.TagString = string.Join(",", tags);
+            var printTags = UpsertTags(id, tags);
+
+            return Redirect(referer); ;
+        }
+        
+        public List<PrintTag> UpsertTags(string printId, List<string> tags)
+        {
+            //remove all current tags
+            var printTags = _context.PrintTag.Where(w => w.PrintId == printId);
+            _context.RemoveRange(printTags);
+
+            foreach (var tag in tags)
             {
-                try
-                {
-                    _context.Update(print);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PrintExists(print.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                PrintTag printTag = new PrintTag() { Id = printId + "#" + tag, PrintId = printId, TagId = tag };
+                _context.Add(printTag);
             }
-            return View(print);
+
+            _context.SaveChanges();
+
+            printTags = _context.PrintTag.Where(w => w.PrintId == printId);
+            return printTags.ToList();
         }
 
         // GET: Prints/Delete/5

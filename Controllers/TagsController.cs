@@ -47,5 +47,6 @@ namespace PrintBed.Controllers
 
             return Json(Ok());  
         }
+
     }
 }

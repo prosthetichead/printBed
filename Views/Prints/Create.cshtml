@@ -21,7 +21,7 @@
                 <label asp-for="CategoryId" class="control-label"></label>
                 <div class="input-group">
                     <select id="CategorySelect" asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
-                    <button class="btn btn-outline-success simpleEditModal-btn" type="button" id="btnAddCategory" data-action="create" data-controller="Categories" data-title="Add New Category" data-id="new" data-updateSelectId="CategorySelect">+</button>
+                    <button class="btn btn-outline-success simpleEditModal-btn" type="button" id="btnAddCategory" data-action="create" data-controller="Categories" data-title="Add New Category" data-id="new" data-update="#CategorySelect">+</button>
                 </div>
             </div>
 
@@ -29,7 +29,7 @@
                 <label asp-for="CreatorId" class="control-label"></label>
                 <div class="input-group">
                     <select id="CreatorId" asp-for="CreatorId" class="form-select" asp-items="ViewBag.CreatorId"></select>                    
-                    <button class="btn btn-outline-success simpleEditModal-btn" type="button" id="btnAddCreator" data-action="create" data-controller="Creators" data-title="Add New Creator" data-id="new" data-updateSelectId="CreatorId">+</button>
+                    <button class="btn btn-outline-success simpleEditModal-btn" type="button" id="btnAddCreator" data-action="create" data-controller="Creators" data-title="Add New Creator" data-id="new" data-update="#CreatorId">+</button>
                 </div>
             </div>
 

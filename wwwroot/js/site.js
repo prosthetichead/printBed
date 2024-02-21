@@ -52,7 +52,7 @@ $(".simpleEditModal-btn").click(function () {
     //
     $("#simpleEditModal-ok").data("action", $(this).data('action'));
     $("#simpleEditModal-ok").data("controller", $(this).data('controller'));
-    $("#simpleEditModal-ok").data("updateSelectId", $(this).data('updateSelectId'));
+    $("#simpleEditModal-ok").data("update", $(this).data('update'));
     
     var showFilePicker = $(this).data('showFilePicker');
     var title = $(this).data('title');
@@ -80,7 +80,7 @@ $("#simpleEditModal-ok").click(function () {
     var id = $('#simpleEditModal-id').val(); 
     var action = $(this).data('action');
     var controller = $(this).data('controller');
-    var updateSelectId = $(this).data('updateSelectId');
+    var updateSelectId = $(this).data('update');
 
     var formData = new FormData();
     if ($('#simpleEditModal-file').length > 0) {
@@ -100,13 +100,13 @@ $("#simpleEditModal-ok").click(function () {
         dataType: 'json',
         success: function (data) {
             console.log(data);
-            if ($('#' + updateSelectId).length > 0) {
+            if ($(updateSelectId).length > 0) {
                 console.log("update list");
-                $('#' + updateSelectId).append($('<option/>', {
+                $(updateSelectId).append($('<option/>', {
                     value: data.id,
                     text: data.name
                 }));
-                $('#' + updateSelectId).val(data.id).change();
+                $(updateSelectId).val(data.id).change();
             }
             else {
                 console.log("reload page");

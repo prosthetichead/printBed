@@ -12,7 +12,7 @@
                 <div class="col">
                     <div class="form-group">
                         <label class="control-label">Search</label>
-                        <input type="text" class="form-control" name="search" />
+                        <input type="text" class="form-control" name="search" value="@ViewBag.Search" />
                     </div>
                 </div>
 
@@ -100,6 +100,13 @@
                     <p class="card-text">@item.Description</p>
                 </div>
                 <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="btn-group" role="group">
+                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Edit" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/pencil.png" class="img-icon-sm me-2" alt="Edit" /> Edit</span> </a>
+                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Details" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/folder.png" class="img-icon-sm me-2" alt="Edit" /> Open Print</span></a>
+                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Edit" /> Delete</span></a>
+                            </div>
+                        </li>
                         <li class="list-group-item text-center">
                             <span class="badge"> <img src="@item.Category?.ImagePath" class="img-icon-sm me-2" alt="@item.Category?.Name" title="@item.Category?.Name" /> @item.Category.Name </span>
                             <span class="badge"> <img src="@item.Creator?.ImagePath" class="img-icon-sm me-2" alt="@item.Creator?.Name" title="@item.Creator?.Name" /> @item.Creator.Name </span>
@@ -108,14 +115,21 @@
                             <span class="badge"> 
                                 <img src="/img/hard-disk.png" class="img-icon-sm me-2"/> @item.PrintFiles.Count() Files / @Math.Round( item.PrintFiles.Sum(s=>s.FileSize/1000000)) MB </span>
                         </li>
-                        <li class="list-group-item">
-                            <div class="btn-group" role="group">
-                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Edit" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/pencil.png" class="img-icon-sm me-2" alt="Edit" /> Edit</span> </a>
-                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Details" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/folder.png" class="img-icon-sm me-2" alt="Edit" /> Open Print</span></a>
-                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Edit" /> Delete</span></a>
-                            </div>
-                        </li>
+
                 </ul>
+                    <div class="card-body text-center text-uppercase" style="height:50px; overflow: auto; overflow-x: hidden; scrollbar-width: none; padding:0px 5px 0px 5px">
+                        @if (item.PrintTags.Count > 0)
+                        {
+                            @foreach (PrintTag printTag in item.PrintTags.OrderBy(o=>o.Tag.Name))
+                            {
+                                <span class="badge text-bg-info" style="font-size:10px; margin:0px; padding: 2px 3px 2px 3px">@printTag.Tag.Name</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-warning" style="font-size:10px; margin:0px; padding: 2px 3px 2px 3px">No Tags</span>
+                        }
+                    </div>
             </div>
         </div>
     }
