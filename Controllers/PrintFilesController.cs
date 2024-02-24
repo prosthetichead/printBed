@@ -147,6 +147,19 @@ namespace PrintBed.Controllers
             return Ok();
         }
 
+        public async Task<IActionResult> Download(string id)
+        {
+            var printFile = await _context.PrintFile
+                .Include(p => p.Print).Include(p => p.FileType)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (printFile == null)
+            {
+                return NotFound();
+            }
+
+            return Redirect(printFile.FilePath);
+        }
+
         // GET: PrintFiles/Delete/5
         public async Task<IActionResult> Delete(string id)
         {

@@ -11,7 +11,7 @@
     <input type="hidden" asp-for="Id" />
     <input type="hidden" name="referer" value="@ViewBag.Referer" />
 
-    <div class="row row-cols-2">            
+    <div class="row row-cols-2 mb-2">            
         <div class="col">
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -27,7 +27,7 @@
             </div> 
         </div>
     </div>
-    <div class="row">
+    <div class="row mb-2">
         <div class="col">
             <div class="form-group">
                 <label asp-for="PrintInstructions" class="control-label"></label>
@@ -36,7 +36,7 @@
             </div>
         </div>
     </div>
-    <div class="row row-cols-2">
+    <div class="row row-cols-2 mb-2">
         <div class="col">
             <div class="form-group">
                 <label asp-for="CreatorId" class="control-label"></label>
@@ -56,7 +56,7 @@
             </div>
         </div>
     </div>
-    <div class="row"> 
+    <div class="row">
         <div class="col">
             <div class="form-group">
                 <label class="control-label">Tags</label>
@@ -69,21 +69,16 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-
+    <div class="row mt-5">
+        <div class="col text-center">
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary w-25 " />
             </div>
-        
+        </div>
     </div>
+
 </form>
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 <partial name="Modal_simpleEditModal" />
 

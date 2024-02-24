@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Components.RenderTree;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -48,6 +50,16 @@ namespace PrintBed.Controllers
             int itemsPerPage = 12;
             int totalPages = 0;
 
+
+            //var lastHomeURL = HttpContext.Session.GetString("lastHomeURL");
+            //if (HttpContext.Request.QueryString.HasValue)
+            //{
+            //    HttpContext.Session.SetString("lastHomeURL", HttpContext.Request.GetDisplayUrl());
+            //}
+            //else if (!HttpContext.Request.QueryString.HasValue && lastHomeURL != null)
+            //{
+            //    return Redirect(lastHomeURL);
+            //}
 
             var prints = _context.Print.Include(m => m.Category).Include(m => m.Creator).Include(m=>m.PrintFiles).ThenInclude(m=>m.FileType).Include(m=>m.PrintTags).ThenInclude(m=> m.Tag)
                 .Where(w => 

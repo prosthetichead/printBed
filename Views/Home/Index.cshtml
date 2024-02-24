@@ -65,16 +65,16 @@
     {
             <div class="col">
                 <div class="card" style="width: 19rem;">
-                    <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
+                    <div id="carousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner border rounded" style="height:300px">
                             @if (item.PrintFiles.Where(w => w.FileType.PreviewType == "Image").Count() > 0)
                             {
                                 @foreach (PrintFile file in item.PrintFiles)
                                 {
                                     if (file.FileType?.PreviewType == "Image")
                                     {
-                                        <div class="carousel-item active">
-                                            <img src="@file.FilePath" class="d-block w-100 object-fit-scale border rounded" alt="@file.DisplayName">
+                                        <div class="carousel-item active  position-absolute top-50 translate-middle-y ">
+                                            <img src="@file.FilePath" class="d-block w-100 object-fit-scale "  alt="@file.DisplayName">
                                         </div>
                                     }
                                 }
@@ -82,7 +82,7 @@
                             else
                             {
                                 <div class="carousel-item active">
-                                    <img src="/img/no-images.png" class="d-block w-100" alt="No Preview Images">
+                                    <img src="/img/no-images.png" class="d-block w-100 object-fit-scale"  alt="No Preview Images">
                                 </div>
                             }
                         </div>
@@ -96,8 +96,7 @@
                         </button>
                     </div>                
                 <div class="card-body">
-                    <h6 class="card-title text-truncate">@item.Name</h6>
-                    <p class="card-text">@item.Description</p>
+                    <h6 class="card-title text-truncate">@item.Name</h6>                       
                 </div>
                 <ul class="list-group list-group-flush">
                         <li class="list-group-item">

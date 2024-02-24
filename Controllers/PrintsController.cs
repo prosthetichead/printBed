@@ -28,7 +28,7 @@ namespace PrintBed.Controllers
             
             PrintDetailPage printDetailPage = new PrintDetailPage();
 
-            var print = await _context.Print.Include( m=>m.PrintFiles.OrderBy(o=>o.FileExtension) ).ThenInclude(m=>m.FileType)
+            var print = await _context.Print.Include( m=>m.PrintFiles.OrderBy(o=>o.FileExtension) ).ThenInclude(m=>m.FileType).Include(m=>m.PrintTags).ThenInclude(m=>m.Tag)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (print == null)
             {
@@ -78,13 +78,14 @@ namespace PrintBed.Controllers
             }
             print.Id = Id;
             print.TagString = string.Join(",",tags);
-            UpsertTags(Id, tags);
 
 
             if (ModelState.IsValid)
             {
                 _context.Add(print);
+
                 await _context.SaveChangesAsync();
+                UpsertTags(Id, tags);
                 return RedirectToAction("Details", new { id = print.Id });
             }
 
@@ -127,11 +128,16 @@ namespace PrintBed.Controllers
                 return NotFound();
             }
 
+            
+
             //
             print.TagString = string.Join(",", tags);
             var printTags = UpsertTags(id, tags);
 
-            return Redirect(referer); ;
+            _context.Print.Update(print);
+            _context.SaveChanges();
+
+            return Redirect(referer);
         }
         
         public List<PrintTag> UpsertTags(string printId, List<string> tags)
