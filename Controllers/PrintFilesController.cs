@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -189,13 +190,17 @@ namespace PrintBed.Controllers
                 return Problem("Entity set 'DatabaseContext.PrintFiles'  is null.");
             }
             var printFile = await _context.PrintFile.FindAsync(id);
-            if (printFile != null)
+            if (printFile == null)
             {
-                _context.PrintFile.Remove(printFile);
+                return Problem("printFile is null.");
             }
-            
+
+            _context.PrintFile.Remove(printFile);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            System.IO.File.Delete(printFile.FilePath);
+            
+            return RedirectToAction("Details", "Prints", new { id = printFile.PrintId });
         }
 
         private bool PrintFileExists(string id)

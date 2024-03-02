@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System.Reflection.Metadata;
 using PrintBed.Models;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace PrintBed.Models
 {
@@ -23,8 +25,21 @@ namespace PrintBed.Models
         {
 
             Configuration = configuration;
-            Database.EnsureCreated();
-            //Database.Migrate();
+
+            //IF the db already exists check that it can handle Migrations (some dbs could exist without the __EFMigrationsHistory table
+            if (Database.GetService<IRelationalDatabaseCreator>().Exists())
+            {
+                Database.ExecuteSqlRaw(@"
+                    CREATE TABLE IF NOT EXISTS ""__EFMigrationsHistory"" (
+                        ""MigrationId"" TEXT NOT NULL CONSTRAINT ""PK___EFMigrationsHistory"" PRIMARY KEY,
+                        ""ProductVersion"" TEXT NOT NULL
+                    );
+
+                    INSERT OR IGNORE INTO ""__EFMigrationsHistory"" (""MigrationId"", ""ProductVersion"")
+                    VALUES ('20240302135834_Init', '8.0.1');        
+                ");
+            }
+            Database.Migrate(); //run any migrations
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
