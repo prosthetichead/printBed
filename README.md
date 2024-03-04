@@ -37,10 +37,11 @@ services:
 
 https://github.com/prosthetichead/printBed/assets/1934681/57e1357a-4d37-4f53-916a-a306a1a6e82a
 
-## Contributing
+## Contributing :thumbsup:
+While this is a personal project contributions to PrintBed are welcome! If you have suggestions for new features, improvements, or bug fixes, please submit an issue or pull request on GitHub. 
 
-Contributions to PrintBed are welcome! If you have suggestions for new features, improvements, or bug fixes, please submit an issue or pull request on GitHub.
-
-## License
-
+## License :scroll:	
 This project is licensed under the [MIT License](LICENSE).
+
+## Acknowledgements :two_hearts:
+Icons used in this project are from [Flaticon](https://www.flaticon.com/) and were created by [freepik](https://www.flaticon.com/authors/freepik).
