@@ -4,6 +4,8 @@
     ViewData["Title"] = "Home Page";
 }
 
+
+
 <div class="container rounded-2 border mb-2 p-2">
     <h5>Filters</h5>
     <div class="row">        
@@ -65,26 +67,24 @@
     {
             <div class="col">
                 <div class="card" style="width: 19rem">
-                    @if (item.PrintFiles.Where(w => w.FileType.PreviewType == "Image").Count() > 0)
+                    @if (item.PrintFiles.Where(w => w.IsPreivew == true).Count() > 0)
                     {
-                        <img src="@item.PrintFiles.Where(w => w.FileType.PreviewType == "Image").FirstOrDefault().FilePath" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="@item.PrintFiles.Where(w => w.FileType.PreviewType == "Image").FirstOrDefault().DisplayName">
+                        PrintFile previewFile = item.PrintFiles.Where(w => w.IsPreivew == true).FirstOrDefault();
+                        if (previewFile.FileType.PreviewType == "Image")
+                        {
+                            <img src="@previewFile.FilePath" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="@previewFile.DisplayName">
+                        }
                     }
                     else
                     {
-                        <img src="/img/no-images.png" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="No Preview Images" />
+                        <img src="/img/no-images.png" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="No Preview Image" />
                     }
                     
                 <div class="card-body">
                     <h6 class="card-title text-truncate">@item.Name</h6>                       
                 </div>
                 <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <div class="btn-group" role="group">
-                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Edit" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/pencil.png" class="img-icon-sm me-2" alt="Edit" /> Edit</span> </a>
-                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Details" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/folder.png" class="img-icon-sm me-2" alt="Edit" /> Open Print</span></a>
-                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Edit" /> Delete</span></a>
-                            </div>
-                        </li>
+
                         <li class="list-group-item text-center">
                             <span class="badge"> <img src="@item.Category?.ImagePath" class="img-icon-sm me-2" alt="@item.Category?.Name" title="@item.Category?.Name" /> @item.Category.Name </span>
                             <span class="badge"> <img src="@item.Creator?.ImagePath" class="img-icon-sm me-2" alt="@item.Creator?.Name" title="@item.Creator?.Name" /> @item.Creator.Name </span>
@@ -94,6 +94,13 @@
                                 <img src="/img/hard-disk.png" class="img-icon-sm me-2"/> @item.PrintFiles.Count() Files / @Math.Round( item.PrintFiles.Sum(s=>s.FileSize/1000000)) MB </span>
                         </li>
 
+                        <li class="list-group-item">
+                            <div class="btn-group" role="group">
+                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Edit" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/pencil.png" class="img-icon-sm me-2" alt="Edit" /> Edit</span> </a>
+                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Details" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/folder.png" class="img-icon-sm me-2" alt="Edit" /> Open Print</span></a>
+                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Edit" /> Delete</span></a>
+                            </div>
+                        </li>
                 </ul>
                     <div class="card-body text-center text-uppercase" style="height:50px; overflow: auto; overflow-x: hidden; scrollbar-width: none; padding:0px 5px 0px 5px">
                         @if (item.PrintTags.Count > 0)
@@ -174,6 +181,9 @@
             select: '#direction-select',
         });
         
+
+
+
 
     </script>
 }

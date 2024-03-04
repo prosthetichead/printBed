@@ -114,11 +114,20 @@
                                         <img src="@item.FileType?.ImagePath" class="card-img-top object-fit-scale border rounded" />
                                     }
                                     <div class="card-body">
-                                        <h6 class="card-title text-truncate">@item.DisplayName</h6>
-                                        <p class="card-text">@item.Description</p>
+                                        <h6 class="card-title text-truncate">@item.DisplayName</h6>                                        
                                     </div>
                                     <ul class="list-group list-group-flush">
-                                        <li class="list-group-item"><img src="@item.FileType?.ImagePath" class="img-icon ms-1" alt="@item.FileType?.Name" title="@item.FileType?.Name" /> <span class="font-monospace"> @item.FileExtension @(Math.Round(item.FileSize / 1000000, 2)) MB</span></li>
+                                        <li class="list-group-item">
+                                            <span class="badge">
+                                                <img src="@item.FileType?.ImagePath" class="img-icon-sm ms-2 me-2" alt="@item.FileType?.Name" title="@item.FileType?.Name" /> @item.FileExtension @(Math.Round(item.FileSize / 1000000, 2)) MB                                                
+                                            </span>
+
+                                            @if (item.IsPreivew == true)
+                                            {
+                                                <span class="badge text-bg-warning">Preview</span>
+                                            }                                                
+                                            
+                                        </li>
                                         <li class="list-group-item">
                                             <div class="btn-group" role="group">
                                                 <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Edit" asp-controller="PrintFiles" asp-route-id="@item.Id"><span class="badge"><img src="/img/pencil.png" class="img-icon-sm me-2" alt="Edit" /> Edit</span> </a>
@@ -131,17 +140,10 @@
                             </div>
                         }
                     </div>
-
                 </div>
             </div>
         </div>
-
-
-    </div>
-    
-
-
-    
+    </div> 
 </div>
 
 

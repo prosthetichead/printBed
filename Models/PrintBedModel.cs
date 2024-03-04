@@ -52,13 +52,11 @@ namespace PrintBed.Models
         public Creator? Creator { get; set; }
 
         [Display(Name = "Print Instructions")]
-        public string? PrintInstructions { get; set; }      
-        
+        public string? PrintInstructions { get; set; }
+
         public DateTime? Created { get; set; }
         public DateTime? LastModified { get; set; }
-
         public ICollection<PrintFile> PrintFiles { get; } = new List<PrintFile>();
-
         public string? TagString { get; set; }
         public ICollection<PrintTag> PrintTags { get; } = new List<PrintTag>();
 
@@ -91,6 +89,7 @@ namespace PrintBed.Models
         public string FilePath { get; set; } = "";
         public double FileSize { get; set; } = 0;
         public string? FileTypeId { get; set; }
+        public bool? IsPreivew { get; set; }
         public FileType? FileType { get; set; }
         public string? PrintId { get; set; }
         public Print? Print { get; set; }
@@ -104,7 +103,8 @@ namespace PrintBed.Models
         public string? Extensions {  get; set; } //comma seperated string of extensions this type may have
         public string? Name { get; set; }
         public string? ImagePath { get; set; }
-        public string PreviewType { get; set; }
+        public string PreviewType { get; set; }        
         public ICollection<PrintFile> PrintFiles { get; } = new List<PrintFile>();
+
     }
 }
