@@ -1,9 +1,9 @@
 # printBed  :printer::bed:
 
-PrintBed is a self-hosted asset management app designed to help users efficiently sort through a large number of 3D printer model assets. With PrintBed, you can organize, search, and categorize your 3D printer models, making it easier to find the right model for your printing needs.
+printBed is a self-hosted asset management app designed to help users efficiently sort through a large number of 3D printer model assets. With printBed, you can organize, search, and categorize your 3D printer models, making it easier to find the right model for your printing needs.
 
 > [!CAUTION]
-> PrintBed is currently a very early ${\color{red}Alpha}$ Use at your own risk. Some basic features are currently broken or may break in the future. 
+> printBed is currently a very early ***Alpha*** Use at your own risk. Some basic features are currently broken or may break in the future. 
 
 ## Features :nerd_face:	
 
@@ -11,7 +11,7 @@ PrintBed is a self-hosted asset management app designed to help users efficientl
 - **Search Functionality**: Quickly search through your collection of models using keywords or tags.
 - **Customizable Tags**: Assign custom tags to your models for easy categorization and filtering.
 - **User-Friendly Interface**: Intuitive interface for easy navigation and management of your assets.
-- **Self-Hosted**: Keep your model assets private by hosting PrintBed on your own server.
+- **Self-Hosted**: Keep your model assets private by hosting printBed on your own server.
 
 ## Installation :floppy_disk:
 Curently printBed is only avalable via Docker.
@@ -20,16 +20,16 @@ Docker Compose
 ```
 version: "2.1"
 services:  
-  printbed:
-    container_name: printbed
-    image: prosthetichead/printbed:latest
+  printBed:
+    container_name: printBed
+    image: prosthetichead/printBed:latest
     volumes:
       - [DB Path]:/appdata
       - [Print Files Path]:/print-files
     ports: 
       - 4040:8080
 ```
-* Replece [DB Path] with local location of database for example ~/appdata/printbed
+* Replece [DB Path] with local location of database for example ~/appdata/printBed
 * Replece [Print Files Path] with local path for storing print files for example ~/mnt/storage/3d-prints
 
 ## Previews :mag:
