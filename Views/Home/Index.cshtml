@@ -77,7 +77,15 @@
                     }
                     else
                     {
-                        <img src="/img/no-images.png" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="No Preview Image" />
+                        if (item.PrintFiles.Where(w => w.FileType?.PreviewType == "Image").Count() > 0)
+                        {
+                            PrintFile previewFile = item.PrintFiles.Where(w => w.FileType?.PreviewType == "Image").FirstOrDefault();
+                            <img src="@previewFile.FilePath" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="@previewFile.DisplayName">
+                        }
+                        else
+                        {
+                            <img src="/img/no-images.png" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="No Preview Image" />
+                        }                        
                     }
                     
                 <div class="card-body">
