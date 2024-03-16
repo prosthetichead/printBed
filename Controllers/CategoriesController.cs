@@ -119,8 +119,49 @@ namespace PrintBed.Controllers
             return View(category);
         }
 
+
+        public async Task<IActionResult> Delete(string id)
+        {
+            var category = await _context.Category
+                .Include(p => p.Prints)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            ViewData["CategoryId"] = new SelectList(_context.Category.Where(w=>w.Id != id).OrderBy(o => o.Name), "Id", "Name", "0");
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            return View(category);
+        }
+
+        // POST: PrintFiles/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id, string moveToId)
+        {
+            if (_context.PrintFile == null)
+            {
+                return Problem("Entity set 'DatabaseContext.PrintFiles'  is null.");
+            }
+            var printFile = await _context.PrintFile.FindAsync(id);
+            if (printFile == null)
+            {
+                return Problem("printFile is null.");
+            }
+
+            _context.PrintFile.Remove(printFile);
+            await _context.SaveChangesAsync();
+
+            System.IO.File.Delete(printFile.FilePath);
+
+            return RedirectToAction("Details", "Prints", new { id = printFile.PrintId });
+        }
+
+
         [HttpPost]
-        public async Task<JsonResult> Delete(string id)
+        public async Task<JsonResult> QuickDelete(string id)
         {
             var category = await _context.Category.FindAsync(id);
             if (category != null)

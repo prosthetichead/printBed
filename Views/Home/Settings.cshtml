@@ -16,8 +16,8 @@
     <div class="row">
         <div class="col-1 border">Image</div>
         <div class="col-8 border">Name</div>
-        <div class="col-2 border">Number of Prints</div>
-        <div class="col-1 border"></div>
+        <div class="col-1 border">Prints</div>
+        <div class="col-2 border"></div>
      </div>
     @foreach(var creator in Model.Creators)
     {
@@ -26,13 +26,14 @@
             <div class="col-8 border">
                 @creator.Name
             </div>
-            <div class="col-2 border">@creator.Prints.Count</div>
-            <div class="col-1 border">
+            <div class="col-1 border">@creator.Prints.Count</div>
+            <div class="col-2 border">
+
+                <a class="btn btn-outline-secondary btn-sm simpleEditModal-btn" data-action="edit" data-controller="Creators" data-title="Edit Creator @creator.Name" data-name="@creator.Name" data-id="@creator.Id"><span class="badge"><img class="img-icon-sm me-2" src="~/img/pencil.png" />Edit</span></a>
                 @if (creator.Id != "0")
                 {
-                    <button type="button" class="btn btn-sm btn-link delete-btn" data-controller="Creators" data-id="@creator.Id"><img class="img-icon-sm" src="~/img/garbage.png" /> </button>
+                    <a class="btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Creators" asp-route-id="@creator.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Delete" />Delete</span></a>
                 }
-                <button type="button" class="btn btn-sm btn-link simpleEditModal-btn" data-action="edit" data-controller="Creators" data-title="Edit Creator @creator.Name" data-id="@creator.Id" data-name="@creator.Name"><img class="img-icon-sm" src="~/img/pencil.png" /></button>
             </div>
          </div>
     }
@@ -48,8 +49,8 @@
     <div class="row">
         <div class="col-1 border">Image</div>
         <div class="col-8 border">Name</div>
-        <div class="col-2 border">Number of Prints</div>
-        <div class="col-1 border"></div>
+        <div class="col-1 border">Prints</div>
+        <div class="col-2 border"></div>
     </div>
     @foreach(var category in Model.Categories)
     {
@@ -58,13 +59,14 @@
             <div class="col-8 border">
                 @category.Name
             </div>
-            <div class="col-2 border">@category.Prints.Count</div>
-            <div class="col-1 border">
+            <div class="col-1 border">@category.Prints.Count</div>
+            <div class="col-2 border">
+
+                <a class="btn btn-outline-secondary btn-sm simpleEditModal-btn" data-action="edit" data-controller="Categories" data-title="Edit Creator @category.Name" data-name="@category.Name" data-id="@category.Id"><span class="badge"><img class="img-icon-sm me-2" src="~/img/pencil.png" />Edit</span></a>
                 @if (category.Id != "0")
                 {
-                    <button class=" btn delete-btn" data-controller="Categories" data-id="@category.Id"><img class="img-icon-sm" src="~/img/garbage.png" /></button>
+                    <a class="btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Categories" asp-route-id="@category.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Delete" />Delete</span></a>
                 }
-                <button type="button" class="btn btn-sm btn-link simpleEditModal-btn" data-action="edit" data-controller="Categories" data-title="Edit Creator @category.Name" data-name="@category.Name" data-id="@category.Id"><img class="img-icon-sm" src="~/img/pencil.png" /></button>
             </div>
         </div>
     }
@@ -78,8 +80,8 @@
     </div>
     <div class="row">
         <div class="col-9 border">Name</div>
-        <div class="col-2 border">Number of Prints</div>
-        <div class="col-1 border"></div>
+        <div class="col-1 border">Prints</div>
+        <div class="col-2 border"></div>
     </div>
     @foreach (var tag in Model.Tags)
     {
@@ -87,8 +89,8 @@
             <div class="col-9 border">
                 @tag.Name
             </div>
-            <div class="col-2 border">@tag.PrintTags.Count</div>
-            <div class="col-1 border">
+            <div class="col-1 border">@tag.PrintTags.Count</div>
+            <div class="col-2 border">
                 <button class=" btn delete-btn" data-controller="Tags" data-id="@tag.Id"><img class="img-icon-sm" src="~/img/garbage.png" /></button>
             </div>
         </div>
@@ -98,8 +100,10 @@
 
 <partial name="Modal_simpleEditModal" />
 
+
 @section Scripts {
     <script>
+
 
 
     </script>

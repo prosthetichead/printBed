@@ -111,14 +111,28 @@ namespace PrintBed.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> Delete(string id)
+        public async Task<JsonResult> Delete(string id, string newId = "0")
         {
-            var creator = await _context.Creator.FindAsync(id);
-            if (creator != null)
+            try
             {
-                _context.Creator.Remove(creator);
-                await _context.SaveChangesAsync();
+                var creator = await _context.Creator.Where(w=>w.Id == id).Include(i=>i.Prints).FirstAsync();
+                if (creator != null)
+                {
+                    foreach(var print  in creator.Prints)
+                    {
+                        print.CreatorId = newId; //set creator to the new id provided.
+                    }
+                    
+                    _context.Creator.Remove(creator);
+                    
+                    await _context.SaveChangesAsync();
+
+                }
             }
+            catch (Exception ex)
+            {
+            }   
+
 
             return Json(Ok());
         }
