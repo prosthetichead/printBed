@@ -68,57 +68,43 @@ namespace PrintBed.Controllers
             return Json(category);
         }
 
-        // GET: Categories/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        // POST: Categories/Edit/5
+        [HttpPost]
+        public async Task<JsonResult> Edit(string id, string name, IFormFile image)
         {
-            if (id == null || _context.Category == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _context.Category.FindAsync(id);
+            var category = _context.Category.Where(w => w.Id == id).FirstOrDefault();
             if (category == null)
             {
-                return NotFound();
+                return new JsonResult(NotFound());
             }
-            return View(category);
+            category.Name = name;
+
+            var imgPath = await SaveImage(image, category);
+            if (!string.IsNullOrEmpty(imgPath))
+            {
+                category.ImagePath = imgPath;
+            }
+
+            _context.Update(category);
+            await _context.SaveChangesAsync();
+
+            return Json(category);
         }
 
-        // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Icon")] Category category)
+        private async Task<string> SaveImage(IFormFile image, Category category)
         {
-            if (id != category.Id)
+            if (image != null && image.Length > 0)
             {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                string ext = Path.GetExtension(image.FileName);
+                string fileName = category.Id + ext;
+                using (Stream fileStream = new FileStream("/appdata/img/" + fileName, FileMode.Create))
                 {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    await image.CopyToAsync(fileStream);
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return "/img/" + fileName;
             }
-            return View(category);
+            return "";
         }
-
 
         public async Task<IActionResult> Delete(string id)
         {
@@ -136,27 +122,35 @@ namespace PrintBed.Controllers
             return View(category);
         }
 
-        // POST: PrintFiles/Delete/5
+        // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id, string moveToId)
         {
-            if (_context.PrintFile == null)
+            var category = await _context.Category.FindAsync(id);
+            if (category == null)
             {
-                return Problem("Entity set 'DatabaseContext.PrintFiles'  is null.");
-            }
-            var printFile = await _context.PrintFile.FindAsync(id);
-            if (printFile == null)
-            {
-                return Problem("printFile is null.");
+                return Problem("category is null.");
             }
 
-            _context.PrintFile.Remove(printFile);
+            //get all of the prints in the Category we are going to delete and move them to the new one.
+            var prints = _context.Print.Where(w => w.CategoryId != null && w.CategoryId == id);
+            foreach( var print in prints ){
+                print.CategoryId = moveToId;
+            }
+
+            //delete thumbnail image
+            if (!string.IsNullOrEmpty(category.ImagePath))
+            {
+                System.IO.File.Delete("/appdata/" + category.ImagePath);
+            }
+            
+            //remove the category and save changes
+            _context.Category.Remove(category);
             await _context.SaveChangesAsync();
+            
 
-            System.IO.File.Delete(printFile.FilePath);
-
-            return RedirectToAction("Details", "Prints", new { id = printFile.PrintId });
+            return RedirectToAction("Settings", "Home");
         }
 
 
