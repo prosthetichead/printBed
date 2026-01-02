@@ -14,19 +14,41 @@ import {
 import { Reflector } from '../objects/Reflector.js';
 import { Refractor } from '../objects/Refractor.js';
 
-/**
- * References:
- *	https://alex.vlachos.com/graphics/Vlachos-SIGGRAPH10-WaterFlow.pdf
- *	http://graphicsrunner.blogspot.de/2010/08/water-using-flow-maps.html
- *
- */
+/** @module Water2 */
 
+/**
+ * An advanced water effect that supports reflections, refractions and flow maps.
+ *
+ * Note that this class can only be used with {@link WebGLRenderer}.
+ * When using {@link WebGPURenderer}, use {@link module:Water2Mesh}.
+ *
+ * References:
+ *
+ * - {@link https://alex.vlachos.com/graphics/Vlachos-SIGGRAPH10-WaterFlow.pdf}
+ * - {@link http://graphicsrunner.blogspot.de/2010/08/water-using-flow-maps.html}
+ *
+ * @augments Mesh
+ * @three_import import { Water } from 'three/addons/objects/Water2.js';
+ */
 class Water extends Mesh {
 
+	/**
+	 * Constructs a new water instance.
+	 *
+	 * @param {BufferGeometry} geometry - The water's geometry.
+	 * @param {module:Water2~Options} [options] - The configuration options.
+	 */
 	constructor( geometry, options = {} ) {
 
 		super( geometry );
 
+		/**
+		 * This flag can be used for type testing.
+		 *
+		 * @type {boolean}
+		 * @readonly
+		 * @default true
+		 */
 		this.isWater = true;
 
 		this.type = 'Water';
@@ -34,14 +56,14 @@ class Water extends Mesh {
 		const scope = this;
 
 		const color = ( options.color !== undefined ) ? new Color( options.color ) : new Color( 0xFFFFFF );
-		const textureWidth = options.textureWidth || 512;
-		const textureHeight = options.textureHeight || 512;
-		const clipBias = options.clipBias || 0;
-		const flowDirection = options.flowDirection || new Vector2( 1, 0 );
-		const flowSpeed = options.flowSpeed || 0.03;
-		const reflectivity = options.reflectivity || 0.02;
-		const scale = options.scale || 1;
-		const shader = options.shader || Water.WaterShader;
+		const textureWidth = options.textureWidth !== undefined ? options.textureWidth : 512;
+		const textureHeight = options.textureHeight !== undefined ? options.textureHeight : 512;
+		const clipBias = options.clipBias !== undefined ? options.clipBias : 0;
+		const flowDirection = options.flowDirection !== undefined ? options.flowDirection : new Vector2( 1, 0 );
+		const flowSpeed = options.flowSpeed !== undefined ? options.flowSpeed : 0.03;
+		const reflectivity = options.reflectivity !== undefined ? options.reflectivity : 0.02;
+		const scale = options.scale !== undefined ? options.scale : 1;
+		const shader = options.shader !== undefined ? options.shader : Water.WaterShader;
 
 		const textureLoader = new TextureLoader();
 
@@ -132,7 +154,7 @@ class Water extends Mesh {
 		this.material.uniforms[ 'reflectivity' ].value = reflectivity;
 		this.material.uniforms[ 'textureMatrix' ].value = textureMatrix;
 
-		// inital values
+		// initial values
 
 		this.material.uniforms[ 'config' ].value.x = 0; // flowMapOffset0
 		this.material.uniforms[ 'config' ].value.y = halfCycle; // flowMapOffset1
@@ -357,5 +379,23 @@ Water.WaterShader = {
 		}`
 
 };
+
+/**
+ * Constructor options of `Water`.
+ *
+ * @typedef {Object} module:Water2~Options
+ * @property {number|Color|string} [color=0xFFFFFF] - The water color.
+ * @property {number} [textureWidth=512] - The texture width. A higher value results in better quality but is also more expensive.
+ * @property {number} [textureHeight=512] - The texture height. A higher value results in better quality but is also more expensive.
+ * @property {number} [clipBias=0] - The clip bias.
+ * @property {Vector2} [flowDirection=(1,0)] - The water's flow direction.
+ * @property {number} [flowSpeed=0.03] - The water's flow speed.
+ * @property {number} [reflectivity=0.02] - The water's reflectivity.
+ * @property {number} [scale=1] - The water's scale.
+ * @property {Object} [shader] - A custom water shader.
+ * @property {?Texture} [flowMap=null] - The flow map. If no flow map is assigned, the water flow is defined by `flowDirection`.
+ * @property {?Texture} [normalMap0] - The first water normal map.
+ * @property {?Texture} [normalMap1] -  The second water normal map.
+ **/
 
 export { Water };
