@@ -22,7 +22,7 @@ version: "2.1"
 services:  
   printBed:
     container_name: printBed
-    image: prosthetichead/printBed:latest
+    image: prosthetichead/printbed:latest
     volumes:
       - [DB Path]:/appdata
       - [Print Files Path]:/print-files
