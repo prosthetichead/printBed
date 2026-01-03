@@ -108,6 +108,27 @@ namespace PrintBed.Controllers
             return "";
         }
 
+
+        public async Task<IActionResult> Delete(string id)
+        {
+            var creator = await _context.Creator
+                .Include(p => p.Prints)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            ViewData["creatorId"] = new SelectList(_context.Creator.Where(w => w.Id != id).OrderBy(o => o.Name), "Id", "Name", "0");
+
+            if (creator == null)
+            {
+                return NotFound();
+            }
+
+            return View(creator);
+        }
+
+
+
+
+
         [HttpPost]
         public async Task<JsonResult> Delete(string id, string newId = "0")
         {

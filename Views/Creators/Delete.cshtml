@@ -1,0 +1,23 @@
+﻿@model PrintBed.Models.Creator
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this creator?</h3>
+<div>
+    <h4>@Html.DisplayNameFor(model => model.Name)</h4>
+    <hr />
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        
+        <p>@Model.Prints.Count() prints use this creator and will need transfer to a new creator </p>
+        <select id="creator-select" name="moveToId" multiple asp-items="ViewBag.CreatorId"></select>
+        
+        
+        <input type="submit" value="Delete" class="btn btn-danger" />
+    </form>
+</div>
