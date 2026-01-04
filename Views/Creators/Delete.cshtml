@@ -8,7 +8,7 @@
 
 <h3>Are you sure you want to delete this creator?</h3>
 <div>
-    <h4>@Html.DisplayNameFor(model => model.Name)</h4>
+    <h4>@Html.DisplayTextFor(model => model.Name)</h4>
     <hr />
 
     <form asp-action="Delete">
@@ -29,11 +29,7 @@
 @section Scripts {
     <script>
         new SlimSelect({
-            select: '#creator-select',
-            settings: {
-                allowDeselect: true,
-                closeOnSelect: false,
-            }
+            select: '#creator-select'
         });
     </script>
 }
