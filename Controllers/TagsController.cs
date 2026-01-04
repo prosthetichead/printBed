@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PrintBed.Models;
 
@@ -33,19 +34,51 @@ namespace PrintBed.Controllers
             return Json(tag);
         }
 
-        [HttpPost]
-        public async Task<JsonResult> Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var tag = await _context.Tag.FindAsync(id);
-            if (tag != null)
+            var tag = await _context.Tag
+                .Include(p => p.PrintTags)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            ViewData["TagId"] = new SelectList(_context.Tag.Where(w => w.Id != id).OrderBy(o => o.Name), "Id", "Name", "0");
+
+            if (tag == null)
             {
-                var printtags = _context.PrintTag.Where(w => w.TagId == id);
-                _context.PrintTag.RemoveRange(printtags);
-                _context.Tag.Remove(tag);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
 
-            return Json(Ok());  
+            return View(tag);
+        }
+
+        // POST: Categories/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id, string moveToId)
+        {
+            var tag = await _context.Tag.Include(p=>p.PrintTags).FirstOrDefaultAsync(m => m.Id == id);
+            if (tag == null)
+            {
+                return Problem("tag is null.");
+            }
+            foreach(var printTag in tag.PrintTags)
+            {
+                if (moveToId != null)
+                {
+                    var newPrintTag = new PrintTag
+                    {
+                        PrintId = printTag.PrintId,
+                        TagId = moveToId
+                    };
+                    _context.PrintTag.Add(newPrintTag);
+                }
+                _context.PrintTag.Remove(printTag);
+
+            }
+            _context.Tag.Remove(tag);
+            await _context.SaveChangesAsync();
+
+
+            return RedirectToAction("Settings", "Home");
         }
 
     }
