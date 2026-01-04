@@ -29,13 +29,18 @@ namespace PrintBed
 
             var app = builder.Build();
 
+
+            Directory.CreateDirectory("/print-files");
+            Directory.CreateDirectory("/appdata");
+            Directory.CreateDirectory("/appdata/img");
+
             // This "scope" creates a temporary instance of your DB just to run migrations
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 try
                 {
-                    var context = services.GetRequiredService<PrintBed.Models.DatabaseContext>();                    
+                    var context = services.GetRequiredService<PrintBed.Models.DatabaseContext>();
                     context.Database.Migrate();
                 }
                 catch (Exception ex)
@@ -44,11 +49,6 @@ namespace PrintBed
                     logger.LogError(ex, "An error occurred while migrating the database.");
                 }
             }
-
-
-            Directory.CreateDirectory("/print-files");
-            Directory.CreateDirectory("/appdata");
-            Directory.CreateDirectory("/appdata/img");
 
             app.UseStaticFiles(new StaticFileOptions()
             {
