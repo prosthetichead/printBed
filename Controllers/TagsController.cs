@@ -55,27 +55,26 @@ namespace PrintBed.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id, string moveToId)
         {
-            var category = await _context.Category.FindAsync(id);
-            if (category == null)
+            var tag = await _context.Tag.Include(p=>p.PrintTags).FirstOrDefaultAsync(m => m.Id == id);
+            if (tag == null)
             {
-                return Problem("category is null.");
+                return Problem("tag is null.");
             }
-
-            //get all of the prints in the Category we are going to delete and move them to the new one.
-            var prints = _context.Print.Where(w => w.CategoryId != null && w.CategoryId == id);
-            foreach (var print in prints)
+            foreach(var printTag in tag.PrintTags)
             {
-                print.CategoryId = moveToId;
-            }
+                if (moveToId != null)
+                {
+                    var newPrintTag = new PrintTag
+                    {
+                        PrintId = printTag.PrintId,
+                        TagId = moveToId
+                    };
+                    _context.PrintTag.Add(newPrintTag);
+                }
+                _context.PrintTag.Remove(printTag);
 
-            //delete thumbnail image
-            if (!string.IsNullOrEmpty(category.ImagePath))
-            {
-                System.IO.File.Delete("/appdata/" + category.ImagePath);
             }
-
-            //remove the category and save changes
-            _context.Category.Remove(category);
+            _context.Tag.Remove(tag);
             await _context.SaveChangesAsync();
 
 
