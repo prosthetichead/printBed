@@ -6,10 +6,10 @@ EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-COPY ["PrintBed/PrintBed.csproj", "PrintBed/"]
-RUN dotnet restore "PrintBed/PrintBed.csproj"
+COPY ["printBed/PrintBed.csproj", "printBed/"]
+RUN dotnet restore "printBed/PrintBed.csproj"
 COPY . .
-WORKDIR "/src/PrintBed"
+WORKDIR "/src/printBed"
 RUN dotnet build "PrintBed.csproj" -c Release -o /app/build
 
 FROM build AS publish
