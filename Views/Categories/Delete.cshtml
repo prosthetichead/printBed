@@ -8,16 +8,26 @@
 
 <h3>Are you sure you want to delete this category?</h3>
 <div>
-    <h4>@Html.DisplayNameFor(model => model.Name)</h4>
+    <h4>@Html.DisplayTextFor(model => model.Name)</h4>
     <hr />
 
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
         
-            <p>@Model.Prints.Count() prints use this category and will need transfer to a new category </p>
-            <select id="category-select" name="moveToId" multiple asp-items="ViewBag.CategoryId"></select>
+        <p>@Model.Prints.Count() prints use this category.</p>
+
+        <label for="category-select">Move prints to category</label>
+        <select id="category-select" name="moveToId" asp-items="ViewBag.CategoryId"></select>
         
         
         <input type="submit" value="Delete" class="btn btn-danger" />
     </form>
 </div>
+
+@section Scripts {
+    <script>
+        new SlimSelect({
+            select: '#category-select'
+        });
+    </script>
+}

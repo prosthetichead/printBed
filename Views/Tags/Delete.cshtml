@@ -1,0 +1,19 @@
+﻿@model PrintBed.Models.Tag
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete Tag</h1>
+
+<h3>Are you sure you want to delete the tag @Html.DisplayTextFor(model => model.Name)?</h3>
+<div>
+    <p>@Html.DisplayTextFor(model => model.PrintTags.Count) prints use this Tag</p>
+    <hr />
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-controller="Home" asp-action="Settings">Cancel</a>
+    </form>
+</div>

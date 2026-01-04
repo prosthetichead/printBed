@@ -8,16 +8,28 @@
 
 <h3>Are you sure you want to delete this creator?</h3>
 <div>
-    <h4>@Html.DisplayNameFor(model => model.Name)</h4>
+    <h4>@Html.DisplayTextFor(model => model.Name)</h4>
     <hr />
 
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
         
-        <p>@Model.Prints.Count() prints use this creator and will need transfer to a new creator </p>
-        <select id="creator-select" name="moveToId" multiple asp-items="ViewBag.CreatorId"></select>
+        <p>@Model.Prints.Count() prints use this creator.</p>
+
+        <label for="creator-select">Move prints to creator</label>
+        <select id="creator-select" name="moveToId" asp-items="ViewBag.CreatorId"></select>
         
         
         <input type="submit" value="Delete" class="btn btn-danger" />
+        <a asp-controller="Home" asp-action="Settings">Cancel</a>
     </form>
 </div>
+
+
+@section Scripts {
+    <script>
+        new SlimSelect({
+            select: '#creator-select'
+        });
+    </script>
+}

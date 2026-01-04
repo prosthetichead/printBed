@@ -127,34 +127,39 @@ namespace PrintBed.Controllers
 
 
 
-
-
-        [HttpPost]
-        public async Task<JsonResult> Delete(string id, string newId = "0")
+        // POST: Categories/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id, string moveToId)
         {
-            try
+            var creator = await _context.Creator.FindAsync(id);
+            if (creator == null)
             {
-                var creator = await _context.Creator.Where(w=>w.Id == id).Include(i=>i.Prints).FirstAsync();
-                if (creator != null)
-                {
-                    foreach(var print  in creator.Prints)
-                    {
-                        print.CreatorId = newId; //set creator to the new id provided.
-                    }
-                    
-                    _context.Creator.Remove(creator);
-                    
-                    await _context.SaveChangesAsync();
-
-                }
+                return Problem("creator is null.");
             }
-            catch (Exception ex)
+
+            //get all of the prints in the Category we are going to delete and move them to the new one.
+            var prints = _context.Print.Where(w => w.CreatorId != null && w.CreatorId == id);
+            foreach (var print in prints)
             {
-            }   
+                print.CreatorId = moveToId;
+            }
+
+            //delete thumbnail image
+            if (!string.IsNullOrEmpty(creator.ImagePath))
+            {
+                System.IO.File.Delete("/appdata/" + creator.ImagePath);
+            }
+
+            //remove the category and save changes
+            _context.Creator.Remove(creator);
+            await _context.SaveChangesAsync();
 
 
-            return Json(Ok());
+            return RedirectToAction("Settings", "Home");
         }
+
+
 
     }
 }
