@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -21,7 +21,6 @@
     <PackageReference Include="NuGet.Common" Version="7.0.1" />
     <PackageReference Include="NuGet.Protocol" Version="7.0.1" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.1" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
 
   <ItemGroup>

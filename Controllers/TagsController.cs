@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PrintBed.Models;
 
@@ -33,19 +34,52 @@ namespace PrintBed.Controllers
             return Json(tag);
         }
 
-        [HttpPost]
-        public async Task<JsonResult> Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var tag = await _context.Tag.FindAsync(id);
-            if (tag != null)
+            var tag = await _context.Tag
+                .Include(p => p.PrintTags)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            ViewData["TagId"] = new SelectList(_context.Tag.Where(w => w.Id != id).OrderBy(o => o.Name), "Id", "Name", "0");
+
+            if (tag == null)
             {
-                var printtags = _context.PrintTag.Where(w => w.TagId == id);
-                _context.PrintTag.RemoveRange(printtags);
-                _context.Tag.Remove(tag);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
 
-            return Json(Ok());  
+            return View(tag);
+        }
+
+        // POST: Categories/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id, string moveToId)
+        {
+            var category = await _context.Category.FindAsync(id);
+            if (category == null)
+            {
+                return Problem("category is null.");
+            }
+
+            //get all of the prints in the Category we are going to delete and move them to the new one.
+            var prints = _context.Print.Where(w => w.CategoryId != null && w.CategoryId == id);
+            foreach (var print in prints)
+            {
+                print.CategoryId = moveToId;
+            }
+
+            //delete thumbnail image
+            if (!string.IsNullOrEmpty(category.ImagePath))
+            {
+                System.IO.File.Delete("/appdata/" + category.ImagePath);
+            }
+
+            //remove the category and save changes
+            _context.Category.Remove(category);
+            await _context.SaveChangesAsync();
+
+
+            return RedirectToAction("Settings", "Home");
         }
 
     }
