@@ -6,77 +6,49 @@
 
 <h1>Edit</h1>
 
-<h4>PrintFile</h4>
+<h4>Print File @Model.FilePath</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+<form asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row row-cols-2 mb-2">
+        <div class="col">
             <div class="form-group">
-                <label asp-for="DisplayName" class="control-label"></label>
-                <input asp-for="DisplayName" class="form-control" />
+                <label for="displayname" class="control-label">Display Name</label>
+                <input id="displayname" asp-for="DisplayName" class="form-control" />
                 <span asp-validation-for="DisplayName" class="text-danger"></span>
             </div>
+        </div>
+        <div class="col">
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+        </div>
+    </div>
+
+    <div class="row row-cols-2 mb-2">
+        <div class="col">
             <div class="form-group">
-                <label asp-for="FileName" class="control-label"></label>
-                <input asp-for="FileName" class="form-control" />
-                <span asp-validation-for="FileName" class="text-danger"></span>
+                <label for="IsPreivew" class="control-label">Use as Print Preivew</label>
+                <input type="checkbox" id="IsPreivew" />
             </div>
-            <div class="form-group">
-                <label asp-for="FileExtension" class="control-label"></label>
-                <input asp-for="FileExtension" class="form-control" />
-                <span asp-validation-for="FileExtension" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FilePath" class="control-label"></label>
-                <input asp-for="FilePath" class="form-control" />
-                <span asp-validation-for="FilePath" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FileSize" class="control-label"></label>
-                <input asp-for="FileSize" class="form-control" />
-                <span asp-validation-for="FileSize" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FileTypeId" class="control-label"></label>
-                <select asp-for="FileTypeId" class="form-control" asp-items="ViewBag.FileTypeId"></select>
-                <span asp-validation-for="FileTypeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IsPreivew" class="control-label"></label>
-                <input asp-for="IsPreivew" class="form-control" />
-                <span asp-validation-for="IsPreivew" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PrintId" class="control-label"></label>
-                <select asp-for="PrintId" class="form-control" asp-items="ViewBag.PrintId"></select>
-                <span asp-validation-for="PrintId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Created" class="control-label"></label>
-                <input asp-for="Created" class="form-control" />
-                <span asp-validation-for="Created" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastModified" class="control-label"></label>
-                <input asp-for="LastModified" class="form-control" />
-                <span asp-validation-for="LastModified" class="text-danger"></span>
-            </div>
+        </div>
+    </div>
+            
+    <div class="row row-cols-2 mb-2">
+        <div class="col">
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
-        </form>
+        </div>
     </div>
-</div>
+</form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Details" asp-controller="Prints" asp-route-id="@Model.PrintId">Back to Print</a>
 </div>
 
 @section Scripts {
