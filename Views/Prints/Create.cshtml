@@ -1,83 +1,120 @@
 ﻿@model PrintBed.Models.Print
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Print";
 }
 
-<h1>Create New Print</h1>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
 
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-printer-fill me-2"></i>Create New Print</h4>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <div class="input-group">
-                    <select id="CategorySelect" asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
-                    <button class="btn btn-outline-success simpleEditModal-btn" type="button" id="btnAddCategory" data-action="create" data-controller="Categories" data-title="Add New Category" data-id="new" data-update="#CategorySelect">+</button>
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="Name" class="form-control" placeholder="Print Name" />
+                                    <label asp-for="Name"></label>
+                                    <span asp-validation-for="Name" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="Description" class="form-control" placeholder="Short Description" />
+                                    <label asp-for="Description"></label>
+                                    <span asp-validation-for="Description" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <textarea asp-for="PrintInstructions" class="form-control" placeholder="Instructions" style="height: 100px"></textarea>
+                            <label asp-for="PrintInstructions"></label>
+                            <span asp-validation-for="PrintInstructions" class="text-danger small"></span>
+                        </div>
+
+                        <hr class="text-muted my-4" />
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="CreatorId" class="form-label fw-bold text-muted small text-uppercase">Creator</label>
+                                <div class="input-group">
+                                    <select id="CreatorId" asp-for="CreatorId" class="form-select" asp-items="ViewBag.CreatorId"></select>
+                                    <button class="btn btn-outline-secondary simpleEditModal-btn" type="button"
+                                            id="btnAddCreator" data-action="create" data-controller="Creators"
+                                            data-title="Add New Creator" data-id="new" data-update="#CreatorId">
+                                        <i class="bi bi-plus-lg"></i> +
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="CategoryId" class="form-label fw-bold text-muted small text-uppercase">Category</label>
+                                <div class="input-group">
+                                    <select id="CategorySelect" asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
+                                    <button class="btn btn-outline-secondary simpleEditModal-btn" type="button"
+                                            id="btnAddCategory" data-action="create" data-controller="Categories"
+                                            data-title="Add New Category" data-id="new" data-update="#CategorySelect">
+                                        <i class="bi bi-plus-lg"></i> +
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Tags</label>
+
+                            <div class="mb-2">
+                                <select id="tags-select" class="form-select" name="tags" data-clearable="true" data-searchable="true" data-creatable="true" multiple asp-items="ViewBag.Tags"></select>
+                            </div>
+
+@*                             <div class="input-group input-group-sm w-50">
+                                <span class="input-group-text bg-light text-muted">New Tag:</span>
+                                <input type="text" class="form-control" id="tags-newtagtext" placeholder="Type tag name..." />
+                                <button class="btn btn-outline-primary newTag-btn" type="button"
+                                        id="tags-newtagbtn" data-update="#tags-select" data-text="#tags-newtagtext">
+                                    Add
+                                </button>
+                            </div> *@
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-link text-decoration-none text-muted">
+                                &larr; Back to List
+                            </a>
+                            <input type="submit" value="Save Print" class="btn btn-primary px-5" />
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label asp-for="CreatorId" class="control-label"></label>
-                <div class="input-group">
-                    <select id="CreatorId" asp-for="CreatorId" class="form-select" asp-items="ViewBag.CreatorId"></select>                    
-                    <button class="btn btn-outline-success simpleEditModal-btn" type="button" id="btnAddCreator" data-action="create" data-controller="Creators" data-title="Add New Creator" data-id="new" data-update="#CreatorId">+</button>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="control-label">Tags</label>
-                <select id="tags-select" name="tags" class="form-select" multiple asp-items="ViewBag.Tags"></select>
-                <div class="input-group">
-                    <input type="text" id="tags-newtagtext" placeholder="Add New Tag"/>
-                    <button class="btn btn-outline-success newTag-btn" type="button" id="tags-newtagbtn" data-update="#tags-select" data-text="#tags-newtagtext">Add</button>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-
-
 
 <partial name="Modal_simpleEditModal" />
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script>
+        const tags_select = new UseBootstrapSelect(document.getElementById('tags-select'));
 
-        new SlimSelect({
-            select: '#tags-select',
-            settings: {
-                allowDeselect: true,
-                closeOnSelect: false,
-            }
-        });
-
-
-
+        // new SlimSelect({
+        //     select: '#tags-select',
+        //     settings: {
+        //         placeholderText: 'Select or search tags...',
+        //         allowDeselect: true,
+        //         closeOnSelect: false,
+        //     }
+        // });
     </script>
 }

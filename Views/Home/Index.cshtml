@@ -28,24 +28,24 @@
                 <div class="col">
                     <div class="form-group">
                         <label class="control-label">Creators</label>
-                        <select id="creators-select" name="creators" multiple asp-items="ViewBag.Creators"></select>
+                        <select id="creators-select" name="creators" class="form-select" multiple asp-items="ViewBag.Creators"></select>
                     </div>
                 </div>
 
                 <div class="col">
                     <div class="form-group">
                         <label class="control-label">Tags</label>
-                        <select id="tags-select" name="tags" multiple asp-items="ViewBag.Tags"></select>
+                        <select id="tags-select" name="tags" class="form-select" multiple asp-items="ViewBag.Tags"></select>
                     </div>
                 </div>
                 <div class="col">
                     <div class="row">
                         <label class="control-label">Sort By</label>
                         <div class="col">
-                            <select id="sort-select" name="sort" asp-items="@ViewBag.SortList"></select>
+                            <select id="sort-select" name="sort" class="form-select" asp-items="@ViewBag.SortList"></select>
                         </div>
                         <div class="col">
-                            <select id="direction-select" name="direction" asp-items="ViewBag.DirectionList"></select>
+                            <select id="direction-select" name="direction" class="form-select" asp-items="ViewBag.DirectionList"></select>
                         </div>
                     </div>
                 </div>
@@ -149,45 +149,43 @@
 
 @section Scripts {
     <script>
+        const categories_select = new UseBootstrapSelect(document.getElementById('categories-select'));
+        const creators_select = new UseBootstrapSelect(document.getElementById('creators-select'));
+        const tags_select = new UseBootstrapSelect(document.getElementById('tags-select'));
+        const sort_select = new UseBootstrapSelect(document.getElementById('sort-select'));
 
-        $(".pagination-page").click(function () {
-            let page = $(this).data('page');
-            const url = new URL(window.location.href);
-            url.searchParams.set('page', page);
-            window.location.href = url.href;
-        });
+        // $(".pagination-page").click(function () {
+        //     let page = $(this).data('page');
+        //     const url = new URL(window.location.href);
+        //     url.searchParams.set('page', page);
+        //     window.location.href = url.href;
+        // });
 
 
-        new SlimSelect({
-            select: '#categories-select',
-            settings: {
-                allowDeselect: true,
-                closeOnSelect: false,
-            }
-        });
 
-        new SlimSelect({
-            select: '#creators-select',
-            settings: {
-                allowDeselect: true,
-                closeOnSelect: false,
-            }
-        });
 
-        new SlimSelect({
-            select: '#tags-select',
-            settings: {
-                allowDeselect: true,
-                closeOnSelect: false,
-            }
-        });
+        // new SlimSelect({
+        //     select: '#creators-select',
+        //     settings: {
+        //         allowDeselect: true,
+        //         closeOnSelect: false,
+        //     }
+        // });
 
-        new SlimSelect({
-            select: '#sort-select',            
-        });
-        new SlimSelect({
-            select: '#direction-select',
-        });
+        // new SlimSelect({
+        //     select: '#tags-select',
+        //     settings: {
+        //         allowDeselect: true,
+        //         closeOnSelect: false,
+        //     }
+        // });
+
+        // new SlimSelect({
+        //     select: '#sort-select',            
+        // });
+        // new SlimSelect({
+        //     select: '#direction-select',
+        // });
 
     </script>
 }

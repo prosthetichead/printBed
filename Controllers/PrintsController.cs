@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Printing;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PrintBed.Helpers;
 using PrintBed.Models;
+using System;
+using System.Collections.Generic;
+using System.Drawing.Printing;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace PrintBed.Controllers
 {
@@ -146,9 +147,40 @@ namespace PrintBed.Controllers
             var printTags = _context.PrintTag.Where(w => w.PrintId == printId);
             _context.RemoveRange(printTags);
 
+            var uniqueTagsMap = new Dictionary<string, string>();
             foreach (var tag in tags)
             {
-                PrintTag printTag = new PrintTag() { Id = printId + "#" + tag, PrintId = printId, TagId = tag };
+                var safeId = Helpers.SafeString.Convert(tag);
+
+                // Only add if we haven't processed this ID yet
+                if (!string.IsNullOrEmpty(safeId) && !uniqueTagsMap.ContainsKey(safeId))
+                {
+                    uniqueTagsMap.Add(safeId, tag);
+                }
+            }
+
+            foreach (var item in uniqueTagsMap)
+            {
+                var tagId = item.Key;   
+                var tagName = item.Value; 
+
+                //check if tag exists
+                var existingTag = _context.Tag.Find(tagId);
+                if (existingTag == null)
+                {
+                    // 3. Create new tag and assign it directly to the variable
+                    existingTag = new Tag() { Id = tagId, Name = tagName };
+                    _context.Add(existingTag);
+                    _context.SaveChanges();
+                }
+
+                //create new print tag
+                PrintTag printTag = new PrintTag()
+                {
+                    Id = printId + "#" + tagId,
+                    PrintId = printId,
+                    Tag = existingTag
+                };
                 _context.Add(printTag);
             }
 
