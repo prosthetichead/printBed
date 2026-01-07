@@ -137,14 +137,35 @@ namespace PrintBed.Controllers
             return Ok();
         }
 
+
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (id == null || _context.PrintFile == null)
+            {
+                return NotFound();
+            }
+
+            var printFile = await _context.PrintFile.Where(w => w.Id == id).FirstOrDefaultAsync();
+
+            if (printFile == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Referer"] = Request.Headers["Referer"];
+
+            
+            return View(printFile);
+        }
+
         // POST: PrintFiles/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditName(string id, string name)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Description,PrintInstructions,CreatorId,CategoryId")] Print print, string referer)
         {
-            
+
             return Ok();
         }
 

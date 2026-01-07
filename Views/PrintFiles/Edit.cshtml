@@ -1,0 +1,56 @@
+﻿@model PrintBed.Models.PrintFile
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Print File @Model.FilePath</h4>
+<hr />
+<form asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row row-cols-2 mb-2">
+        <div class="col">
+            <div class="form-group">
+                <label for="displayname" class="control-label">Display Name</label>
+                <input id="displayname" asp-for="DisplayName" class="form-control" />
+                <span asp-validation-for="DisplayName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-cols-2 mb-2">
+        <div class="col">
+            <div class="form-group">
+                <label for="IsPreivew" class="control-label">Use as Print Preivew</label>
+                <input type="checkbox" id="IsPreivew" />
+            </div>
+        </div>
+    </div>
+            
+    <div class="row row-cols-2 mb-2">
+        <div class="col">
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Details" asp-controller="Prints" asp-route-id="@Model.PrintId">Back to Print</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
