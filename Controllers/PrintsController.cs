@@ -222,14 +222,20 @@ namespace PrintBed.Controllers
             
             if (print != null)
             {
+                //remove files
                 var printFiles = _context.PrintFile.Where(w=>w.PrintId == id);
                 foreach (var file in printFiles)
                 {
                     System.IO.File.Delete(file.FilePath);
                     _context.PrintFile.Remove(file);
                 }
-                _context.Print.Remove(print);
-                
+
+                //remove print tags
+                var printTags = _context.PrintTag.Where(w => w.PrintId == id);
+                _context.PrintTag.RemoveRange(printTags);
+
+                //remove the print
+                _context.Print.Remove(print);                
             }
             
             await _context.SaveChangesAsync();

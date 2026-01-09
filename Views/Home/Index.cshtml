@@ -154,38 +154,27 @@
         const tags_select = new UseBootstrapSelect(document.getElementById('tags-select'));
         const sort_select = new UseBootstrapSelect(document.getElementById('sort-select'));
 
-        // $(".pagination-page").click(function () {
-        //     let page = $(this).data('page');
-        //     const url = new URL(window.location.href);
-        //     url.searchParams.set('page', page);
-        //     window.location.href = url.href;
-        // });
+        // Select all pagination links
+        const paginationLinks = document.querySelectorAll('.pagination-page');
 
+        // Add click event listener to each
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                // Stop if the button is visually disabled
+                if (this.classList.contains('disabled')) return;
 
+                const page = this.dataset.page; // Reads data-page="x"
+                
+                // 1. Get the current URL
+                const url = new URL(window.location.href);
+                // 2. Update ONLY the 'page' parameter
+                url.searchParams.set('page', page);
 
-
-        // new SlimSelect({
-        //     select: '#creators-select',
-        //     settings: {
-        //         allowDeselect: true,
-        //         closeOnSelect: false,
-        //     }
-        // });
-
-        // new SlimSelect({
-        //     select: '#tags-select',
-        //     settings: {
-        //         allowDeselect: true,
-        //         closeOnSelect: false,
-        //     }
-        // });
-
-        // new SlimSelect({
-        //     select: '#sort-select',            
-        // });
-        // new SlimSelect({
-        //     select: '#direction-select',
-        // });
+                // 3. Reload the page with the new URL
+                window.location.href = url.href;
+            });
+        });
 
     </script>
 }

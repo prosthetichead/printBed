@@ -1,4 +1,104 @@
-﻿
+﻿document.addEventListener('DOMContentLoaded', () => {
+
+
+    const editModalBtns = document.querySelectorAll(".simpleEditModal-btn");
+    // Cache the modal element and the OK button
+    const modalEl = document.getElementById('simpleEditModal');
+    const okBtn = document.getElementById("simpleEditModal-ok");
+
+    editModalBtns.forEach(btn => {
+        btn.addEventListener("click", function () {
+            // Transfer data attributes to the OK button
+            okBtn.dataset.action = this.dataset.action;
+            okBtn.dataset.controller = this.dataset.controller;
+            okBtn.dataset.update = this.dataset.update;
+
+            const showFilePicker = this.dataset.showFilePicker === 'true'; // dataset stores strings
+            const title = this.dataset.title;
+            const id = this.dataset.id;
+            const name = this.dataset.name; 
+
+            // Reset File Input
+            const fileInput = document.getElementById('simpleEditModal-file');
+            if (fileInput) fileInput.value = '';
+
+            // Set Title and Values
+            document.getElementById('simpleEditModal-title').textContent = title;
+            document.getElementById('simpleEditModal-id').value = id;
+
+            // Handle Name (check if name exists to avoid setting "undefined")
+            const nameInput = document.getElementById('simpleEditModal-name');
+            if (name) nameInput.value = name;
+            else nameInput.value = '';
+
+
+            // Show Bootstrap 5 Modal
+            // We create a new instance or get the existing one
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modalInstance.show();
+        });
+    });
+
+    // --- 3. Modal OK Button Click ---
+    if (okBtn) {
+        okBtn.addEventListener("click", function () {
+            const name = document.getElementById('simpleEditModal-name').value;
+            const id = document.getElementById('simpleEditModal-id').value;
+
+            const action = this.dataset.action;
+            const controller = this.dataset.controller;
+            const updateSelectId = this.dataset.update;
+
+            const formData = new FormData();
+
+            const fileInput = document.getElementById('simpleEditModal-file');
+            if (fileInput && fileInput.files.length > 0) {
+                formData.append('image', fileInput.files[0]);
+            }
+
+            formData.append('name', name);
+
+            if (action !== 'create') {
+                formData.append('id', id);
+            }
+
+            fetch(`/${controller}/${action}`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+
+                    // Check if target element exists
+                    // Note: querySelector requires the ID to include '#' (e.g. '#mySelect')
+                    const targetSelect = document.querySelector(updateSelectId);
+
+                    if (targetSelect) {
+                        console.log("update list");
+
+                        // Create and append option
+                        const option = document.createElement("option");
+                        option.value = data.id;
+                        option.text = data.name;
+                        targetSelect.appendChild(option);
+
+                        // Set value and trigger change event
+                        targetSelect.value = data.id;
+                        targetSelect.dispatchEvent(new Event('change'));
+
+                        // Hide the modal manually if needed
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                        if (modalInstance) modalInstance.hide();
+                    } else {
+                        console.log("reload page");
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    }
+});
 
 
 
