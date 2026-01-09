@@ -6,60 +6,95 @@
 
 
 
-<div class="container rounded-2 border mb-2 p-2">
-    <h5>Filters</h5>
-    <div class="row">        
-        <form>
-            <div class="row row-cols-3">
-                <div class="col">
-                    <div class="form-group">
-                        <label class="control-label">Search</label>
-                        <input type="text" class="form-control" name="search" value="@ViewBag.Search" />
-                    </div>
-                </div>
+<div class="container mb-3">
+    <div class="accordion" id="filterAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="fw-bold me-2">Filters</span>
+                        @* Show Active Search Term *@
+                        @if (!string.IsNullOrEmpty(ViewBag.Search))
+                        {
+                            <span class="badge bg-warning text-dark border">Search: "@ViewBag.Search"</span>
+                        }
+                        @* Show counts for active filters (checks the URL directly) *@
+                        @if (Context.Request.Query["categories"].Count > 0)
+                        {
+                            <span class="badge bg-info text-dark">@Context.Request.Query["categories"].Count Categories</span>
+                        }
+                        @if (Context.Request.Query["creators"].Count > 0)
+                        {
+                            <span class="badge bg-info text-dark">@Context.Request.Query["creators"].Count Creators</span>
+                        }
+                        @if (Context.Request.Query["tags"].Count > 0)
+                        {
+                            <span class="badge bg-info text-dark">@Context.Request.Query["tags"].Count Tags</span>
+                        }
 
-                <div class="col">
-                    <div class="form-group">
-                        <label class="control-label">Categories</label>                
-                        <select id="categories-select" name="categories" class="form-select" multiple asp-items="ViewBag.Categories"></select>
+                        @* Always show Sort Order *@
+                        <span class="badge bg-light text-secondary border">
+                            Sort: @(Context.Request.Query["sort"].FirstOrDefault() ?? "Name")
+                            @(Context.Request.Query["direction"] == "DESC" ? "▼" : "▲")
+                        </span>
                     </div>
-                </div>
+                </button>
+            </h2>
 
-                <div class="col">
-                    <div class="form-group">
-                        <label class="control-label">Creators</label>
-                        <select id="creators-select" name="creators" class="form-select" multiple asp-items="ViewBag.Creators"></select>
-                    </div>
-                </div>
+            <div id="filterCollapse" class="accordion-collapse collapse" data-bs-parent="#filterAccordion">
+                <div class="accordion-body">
+                    <form>
+                        <div class="row row-cols-1 row-cols-md-3 g-3">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="control-label fw-bold small">Search</label>
+                                    <input type="text" class="form-control" name="search" value="@ViewBag.Search" placeholder="Search..." />
+                                </div>
+                            </div>
 
-                <div class="col">
-                    <div class="form-group">
-                        <label class="control-label">Tags</label>
-                        <select id="tags-select" name="tags" class="form-select" multiple asp-items="ViewBag.Tags"></select>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="row">
-                        <label class="control-label">Sort By</label>
-                        <div class="col">
-                            <select id="sort-select" name="sort" class="form-select" asp-items="@ViewBag.SortList"></select>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="control-label fw-bold small">Categories</label>
+                                    <select id="categories-select" name="categories" class="form-select" multiple asp-items="ViewBag.Categories"></select>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="control-label fw-bold small">Creators</label>
+                                    <select id="creators-select" name="creators" class="form-select" multiple asp-items="ViewBag.Creators"></select>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="control-label fw-bold small">Tags</label>
+                                    <select id="tags-select" name="tags" class="form-select" multiple asp-items="ViewBag.Tags"></select>
+                                </div>
+                            </div>
+                            
+                            <div class="col">
+                                <div class="row">
+                                    <label class="control-label fw-bold small">Sort By</label>
+                                    <div class="col">
+                                        <select id="sort-select" name="sort" class="form-select" asp-items="@ViewBag.SortList"></select>
+                                    </div>
+                                    <div class="col">
+                                        <select id="direction-select" name="direction" class="form-select" asp-items="ViewBag.DirectionList"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col d-flex align-items-end justify-content-end">
+                                <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+                            </div>
                         </div>
-                        <div class="col">
-                            <select id="direction-select" name="direction" class="form-select" asp-items="ViewBag.DirectionList"></select>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
-            <div class="row row-cols-3">
-                <div class="col"></div>
-                <div class="col"></div>
-                <div class="col text-center align-middle">
-                    <button type="submit" class="btn btn-primary m-2">Apply Filter</button>
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
-</div> 
+</div>
 
 <div class="container mb-1 p-2">   
 <div class="row row-cols-4 g-3">
@@ -67,27 +102,12 @@
     {
             <div class="col">
                 <div class="card" style="width: 19rem">
-                    @if (item.PrintFiles.Where(w => w.IsPreivew == true).Count() > 0)
-                    {
-                        PrintFile previewFile = item.PrintFiles.Where(w => w.IsPreivew == true).FirstOrDefault();
-                        if (previewFile.FileType.PreviewType == "Image")
-                        {
-                            <img src="@previewFile.FilePath" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="@previewFile.DisplayName">
-                        }
-                    }
-                    else
-                    {
-                        if (item.PrintFiles.Where(w => w.FileType?.PreviewType == "Image").Count() > 0)
-                        {
-                            PrintFile previewFile = item.PrintFiles.Where(w => w.FileType?.PreviewType == "Image").FirstOrDefault();
-                            <img src="@previewFile.FilePath" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="@previewFile.DisplayName">
-                        }
-                        else
-                        {
-                            <img src="/img/no-images.png" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="No Preview Image" />
-                        }                        
-                    }
-                    
+
+                    <img src="@GetPreviewImage(item)" 
+     class="card-img-top d-block w-100 object-fit-scale border rounded" 
+     style="height:300px" 
+     alt="@item.Name">
+     
                 <div class="card-body">
                     <h6 class="card-title text-truncate">@item.Name</h6>                       
                 </div>
@@ -99,7 +119,7 @@
                         </li>
                         <li class="list-group-item text-center">
                             <span class="badge"> 
-                                <img src="/img/hard-disk.png" class="img-icon-sm me-2"/> @item.PrintFiles.Count() Files / @Math.Round( item.PrintFiles.Sum(s=>s.FileSize/1000000)) MB </span>
+                                <img src="/img/hard-disk.png" class="img-icon-sm me-2"/> @item.PrintFiles.Count() Files / @GetFileSizeMb(item) MB </span>
                         </li>
 
                         <li class="list-group-item">
@@ -177,4 +197,34 @@
         });
 
     </script>
+}
+
+
+@functions {
+    public string GetPreviewImage(PrintBed.Models.Print item)
+    {
+        // Try to find a file marked explicitly as "Preview"
+        var preview = item.PrintFiles.FirstOrDefault(w => w.IsPreivew == true);
+        if (preview != null && preview.FileType?.PreviewType == "Image")
+        {
+            return preview.FilePath;
+        }
+
+        // If no preview, grab the first available image
+        var anyImage = item.PrintFiles.FirstOrDefault(w => w.FileType?.PreviewType == "Image");
+        if (anyImage != null)
+        {
+            return anyImage.FilePath;
+        }
+
+        // Fallback to placeholder
+        return "/img/no-images.png";
+    }
+
+    public double GetFileSizeMb(PrintBed.Models.Print item)
+    {
+        if (item.PrintFiles == null || !item.PrintFiles.Any()) return 0;
+        double totalBytes = item.PrintFiles.Sum(s => s.FileSize);
+        return Math.Round(totalBytes / 1000000.0, 2);
+    }
 }
