@@ -72,3 +72,33 @@ div#drop-zone-fullpage {
     height: 16px;
     object-fit: scale-down;
 }
+
+
+
+
+/* Card Hover Animation */
+.card-hover {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+    .card-hover:hover {
+        transform: translateY(-5px);
+        /* A slightly lighter shadow so it glows faintly against a dark background */
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+        border-color: #6c757d !important; /* Highlight border on hover */
+    }
+
+/* Image container */
+.img-wrapper {
+    position: relative;
+    overflow: hidden;
+    background-color: #212529; /* Dark background for transparent images */
+}
+
+/* Badge overlay styling */
+.badge-overlay {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    backdrop-filter: blur(2px);
+    border: 1px solid #495057; /* Subtle border for definition */
+}
