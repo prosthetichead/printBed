@@ -89,7 +89,7 @@ namespace PrintBed.Models
         public string FilePath { get; set; } = "";
         public double FileSize { get; set; } = 0;
         public string? FileTypeId { get; set; }
-        public bool? IsPreivew { get; set; }
+        public bool IsPreview { get; set; }
         public FileType? FileType { get; set; }
         public string? PrintId { get; set; }
         public Print? Print { get; set; }

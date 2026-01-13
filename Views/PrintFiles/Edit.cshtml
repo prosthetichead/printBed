@@ -11,6 +11,7 @@
 <form asp-action="Edit">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" name="referer" value="@ViewBag.Referer" />
 
     <div class="row row-cols-2 mb-2">
         <div class="col">

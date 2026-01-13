@@ -242,7 +242,7 @@
     public string GetPreviewImage(PrintBed.Models.Print item)
     {
         // Try to find a file marked explicitly as "Preview"
-        var preview = item.PrintFiles.FirstOrDefault(w => w.IsPreivew == true);
+        var preview = item.PrintFiles.FirstOrDefault(w => w.IsPreview == true);
         if (preview != null && preview.FileType?.PreviewType == "Image")
         {
             return preview.FilePath;
