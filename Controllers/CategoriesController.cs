@@ -53,7 +53,7 @@ namespace PrintBed.Controllers
             var Id = "new";
             while(Id == "new")
             {
-                Id = IDGen.GetBase36(8);
+                Id = IdGen.GetBase36(8);
                 if(_context.Category.Any(m => m.Id == Id))
                 {
                     Id = "new";
