@@ -9,6 +9,8 @@ namespace PrintBed.Models
         public List<PrintFile> Files { get; set; }
         public int totalPages { get; set; } = 1;
         public int currentPage { get; set; } = 1;
+        public string CurrentSearch { get; set; } = "";
+        public string CurrentType { get; set; } = "";
     }
 
     public class SettingsPage
