@@ -163,7 +163,7 @@ namespace PrintBed.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,DisplayName,Description")] PrintFile printFile, bool IsPreivew, string referer)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,DisplayName,Description,IsPreview")] PrintFile printFile, string referer)
         {
             if (id != printFile.Id)
             {
@@ -181,7 +181,18 @@ namespace PrintBed.Controllers
                 {
                     existingPrintFile.DisplayName = printFile.DisplayName;
                     existingPrintFile.Description = printFile.Description;
-                    
+                    existingPrintFile.IsPreview = printFile.IsPreview;
+                    if(printFile.IsPreview)
+                    {
+                        //set all other files for this print to not be preview
+                        var otherFiles = _context.PrintFile.Where(w => w.PrintId == existingPrintFile.PrintId && w.Id != existingPrintFile.Id).ToList();
+                        foreach(var otherFile in otherFiles)
+                        {
+                            otherFile.IsPreview = false;
+                            _context.Update(otherFile);
+                        }
+                    }
+
                     existingPrintFile.LastModified = DateTime.Now;
                     _context.Update(existingPrintFile);
                     await _context.SaveChangesAsync();
