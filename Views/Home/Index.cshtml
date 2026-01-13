@@ -6,127 +6,185 @@
 
 
 
-<div class="container rounded-2 border mb-2 p-2">
-    <h5>Filters</h5>
-    <div class="row">        
-        <form>
-            <div class="row row-cols-3">
-                <div class="col">
-                    <div class="form-group">
-                        <label class="control-label">Search</label>
-                        <input type="text" class="form-control" name="search" value="@ViewBag.Search" />
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="form-group">
-                        <label class="control-label">Categories</label>                
-                        <select id="categories-select" name="categories" class="form-select" multiple asp-items="ViewBag.Categories"></select>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="form-group">
-                        <label class="control-label">Creators</label>
-                        <select id="creators-select" name="creators" class="form-select" multiple asp-items="ViewBag.Creators"></select>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="form-group">
-                        <label class="control-label">Tags</label>
-                        <select id="tags-select" name="tags" class="form-select" multiple asp-items="ViewBag.Tags"></select>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="row">
-                        <label class="control-label">Sort By</label>
-                        <div class="col">
-                            <select id="sort-select" name="sort" class="form-select" asp-items="@ViewBag.SortList"></select>
-                        </div>
-                        <div class="col">
-                            <select id="direction-select" name="direction" class="form-select" asp-items="ViewBag.DirectionList"></select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row row-cols-3">
-                <div class="col"></div>
-                <div class="col"></div>
-                <div class="col text-center align-middle">
-                    <button type="submit" class="btn btn-primary m-2">Apply Filter</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div> 
-
-<div class="container mb-1 p-2">   
-<div class="row row-cols-4 g-3">
-    @foreach (Print item in Model)
-    {
-            <div class="col">
-                <div class="card" style="width: 19rem">
-                    @if (item.PrintFiles.Where(w => w.IsPreivew == true).Count() > 0)
-                    {
-                        PrintFile previewFile = item.PrintFiles.Where(w => w.IsPreivew == true).FirstOrDefault();
-                        if (previewFile.FileType.PreviewType == "Image")
+<div class="container mb-3">
+    <div class="accordion" id="filterAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="fw-bold me-2">Filters</span>
+                        @* Show Active Search Term *@
+                        @if (!string.IsNullOrEmpty(ViewBag.Search))
                         {
-                            <img src="@previewFile.FilePath" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="@previewFile.DisplayName">
+                            <span class="badge bg-warning text-dark border">Search: "@ViewBag.Search"</span>
                         }
-                    }
-                    else
-                    {
-                        if (item.PrintFiles.Where(w => w.FileType?.PreviewType == "Image").Count() > 0)
+                        @* Show counts for active filters (checks the URL directly) *@
+                        @if (Context.Request.Query["categories"].Count > 0)
                         {
-                            PrintFile previewFile = item.PrintFiles.Where(w => w.FileType?.PreviewType == "Image").FirstOrDefault();
-                            <img src="@previewFile.FilePath" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="@previewFile.DisplayName">
+                            <span class="badge bg-info text-dark">@Context.Request.Query["categories"].Count Categories</span>
                         }
-                        else
+                        @if (Context.Request.Query["creators"].Count > 0)
                         {
-                            <img src="/img/no-images.png" class="card-img-top d-block w-100 object-fit-scale border rounded" style="height:300px" alt="No Preview Image" />
-                        }                        
-                    }
-                    
-                <div class="card-body">
-                    <h6 class="card-title text-truncate">@item.Name</h6>                       
-                </div>
-                <ul class="list-group list-group-flush">
+                            <span class="badge bg-info text-dark">@Context.Request.Query["creators"].Count Creators</span>
+                        }
+                        @if (Context.Request.Query["tags"].Count > 0)
+                        {
+                            <span class="badge bg-info text-dark">@Context.Request.Query["tags"].Count Tags</span>
+                        }
 
-                        <li class="list-group-item text-center">
-                            <span class="badge"> <img src="@item.Category?.ImagePath" class="img-icon-sm me-2" alt="@item.Category?.Name" title="@item.Category?.Name" /> @item.Category.Name </span>
-                            <span class="badge"> <img src="@item.Creator?.ImagePath" class="img-icon-sm me-2" alt="@item.Creator?.Name" title="@item.Creator?.Name" /> @item.Creator.Name </span>
-                        </li>
-                        <li class="list-group-item text-center">
-                            <span class="badge"> 
-                                <img src="/img/hard-disk.png" class="img-icon-sm me-2"/> @item.PrintFiles.Count() Files / @Math.Round( item.PrintFiles.Sum(s=>s.FileSize/1000000)) MB </span>
-                        </li>
+                        @* Always show Sort Order *@
+                        <span class="badge bg-light text-secondary border">
+                            Sort: @(Context.Request.Query["sort"].FirstOrDefault() ?? "Name")
+                            @(Context.Request.Query["direction"] == "DESC" ? "▼" : "▲")
+                        </span>
+                    </div>
+                </button>
+            </h2>
 
-                        <li class="list-group-item">
-                            <div class="btn-group" role="group">
-                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Edit" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/pencil.png" class="img-icon-sm me-2" alt="Edit" /> Edit</span> </a>
-                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Details" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/folder.png" class="img-icon-sm me-2" alt="Edit" /> Open Print</span></a>
-                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Prints" asp-route-id="@item.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Edit" /> Delete</span></a>
+            <div id="filterCollapse" class="accordion-collapse collapse" data-bs-parent="#filterAccordion">
+                <div class="accordion-body">
+                    <form>
+                        <div class="row row-cols-1 row-cols-md-3 g-3">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="control-label fw-bold small">Search</label>
+                                    <input type="text" class="form-control" name="search" value="@ViewBag.Search" placeholder="Search..." />
+                                </div>
                             </div>
-                        </li>
-                </ul>
-                    <div class="card-body text-center text-uppercase" style="height:50px; overflow: auto; overflow-x: hidden; scrollbar-width: none; padding:0px 5px 0px 5px">
-                        @if (item.PrintTags.Count > 0)
-                        {
-                            @foreach (PrintTag printTag in item.PrintTags.OrderBy(o=>o.Tag.Name))
-                            {
-                                <span class="badge text-bg-info" style="font-size:10px; margin:0px; padding: 2px 3px 2px 3px">@printTag.Tag.Name</span>
-                            }
-                        }
-                        else
-                        {
-                            <span class="badge text-bg-warning" style="font-size:10px; margin:0px; padding: 2px 3px 2px 3px">No Tags</span>
-                        }
-                    </div>
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="control-label fw-bold small">Categories</label>
+                                    <select id="categories-select" name="categories" class="form-select" multiple asp-items="ViewBag.Categories"></select>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="control-label fw-bold small">Creators</label>
+                                    <select id="creators-select" name="creators" class="form-select" multiple asp-items="ViewBag.Creators"></select>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="control-label fw-bold small">Tags</label>
+                                    <select id="tags-select" name="tags" class="form-select" multiple asp-items="ViewBag.Tags"></select>
+                                </div>
+                            </div>
+                            
+                            <div class="col">
+                                <div class="row">
+                                    <label class="control-label fw-bold small">Sort By</label>
+                                    <div class="col">
+                                        <select id="sort-select" name="sort" class="form-select" asp-items="@ViewBag.SortList"></select>
+                                    </div>
+                                    <div class="col">
+                                        <select id="direction-select" name="direction" class="form-select" asp-items="ViewBag.DirectionList"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col d-flex align-items-end justify-content-end">
+                                <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    }
+    </div>
 </div>
+
+<div class="container mb-1 p-2">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
+        @foreach (Print item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 card-hover text-bg-dark border-secondary" style="width: 100%">
+
+                    <div class="img-wrapper rounded-top">
+                        <a asp-action="Details" asp-controller="Prints" asp-route-id="@item.Id">
+                            <img src="@GetPreviewImage(item)"
+                                 class="card-img-top d-block w-100 object-fit-scale border-bottom border-secondary"
+                                 style="height:300px;"
+                                 alt="@item.Name">
+                        </a>
+
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge badge-overlay shadow-sm">
+                                @item.PrintFiles.Count() Files / @GetFormattedFileSize(item)
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="card-body py-3 text-center">
+
+                        <h5 class="card-title text-truncate fw-bold mb-0 lh-base" title="@item.Name">
+                            <a asp-action="Details" asp-controller="Prints" asp-route-id="@item.Id" class="text-white text-decoration-none stretched-link">
+                                @item.Name
+                            </a>
+                        </h5>
+                    </div>
+
+                    <div class="card-body py-2 border-top border-secondary bg-transparent">
+                        <div class="row text-center g-0">
+
+                            <div class="col-6 border-end border-secondary">
+                                <span class="d-block text-secondary text-uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                                    Category
+                                </span>
+                                <div class="d-flex align-items-center justify-content-center gap-1 mt-1 text-truncate px-1">
+                                    <img src="@item.Category?.ImagePath" class="rounded-1" style="width: 20px; height: 20px; object-fit: cover;" />
+                                    <span class="text-white small text-truncate" title="@item.Category?.Name">@item.Category?.Name</span>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <span class="d-block text-secondary text-uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                                    Creator
+                                </span>
+                                <div class="d-flex align-items-center justify-content-center gap-1 mt-1 text-truncate px-1">
+                                    <img src="@item.Creator?.ImagePath" class="rounded-1" style="width: 20px; height: 20px; object-fit: cover;" />
+                                    <span class="text-white small text-truncate" title="@item.Creator?.Name">@item.Creator?.Name</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-transparent border-secondary">
+                        <div class="d-flex flex-wrap justify-content-center align-items-center gap-1" style="height: 50px; overflow: hidden;">
+                            @if (item.PrintTags.Count > 0)
+                            {
+                                @foreach (PrintTag printTag in item.PrintTags.OrderBy(o => o.Tag.Name).Take(4))
+                                {
+                                    <span class="badge rounded-pill border border-info text-info bg-transparent" style="font-size: 10px;">
+                                        @printTag.Tag.Name
+                                    </span>
+                                }
+
+                                @if (item.PrintTags.Count > 4)
+                                {
+                                    <span class="badge rounded-pill bg-secondary text-white" style="font-size: 10px;">
+                                        +@(item.PrintTags.Count - 4)
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="badge rounded-pill border border-secondary text-secondary bg-transparent fst-italic">No Tags</span>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
     <div class="row mt-2">
         <div class="col align-content-end text-end float-end">
             <nav class="float-end">
@@ -154,38 +212,73 @@
         const tags_select = new UseBootstrapSelect(document.getElementById('tags-select'));
         const sort_select = new UseBootstrapSelect(document.getElementById('sort-select'));
 
-        // $(".pagination-page").click(function () {
-        //     let page = $(this).data('page');
-        //     const url = new URL(window.location.href);
-        //     url.searchParams.set('page', page);
-        //     window.location.href = url.href;
-        // });
+        // Select all pagination links
+        const paginationLinks = document.querySelectorAll('.pagination-page');
 
+        // Add click event listener to each
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                // Stop if the button is visually disabled
+                if (this.classList.contains('disabled')) return;
 
+                const page = this.dataset.page; // Reads data-page="x"
+                
+                // 1. Get the current URL
+                const url = new URL(window.location.href);
+                // 2. Update ONLY the 'page' parameter
+                url.searchParams.set('page', page);
 
-
-        // new SlimSelect({
-        //     select: '#creators-select',
-        //     settings: {
-        //         allowDeselect: true,
-        //         closeOnSelect: false,
-        //     }
-        // });
-
-        // new SlimSelect({
-        //     select: '#tags-select',
-        //     settings: {
-        //         allowDeselect: true,
-        //         closeOnSelect: false,
-        //     }
-        // });
-
-        // new SlimSelect({
-        //     select: '#sort-select',            
-        // });
-        // new SlimSelect({
-        //     select: '#direction-select',
-        // });
+                // 3. Reload the page with the new URL
+                window.location.href = url.href;
+            });
+        });
 
     </script>
+}
+
+
+@functions {
+    public string GetPreviewImage(PrintBed.Models.Print item)
+    {
+        // Try to find a file marked explicitly as "Preview"
+        var preview = item.PrintFiles.FirstOrDefault(w => w.IsPreivew == true);
+        if (preview != null && preview.FileType?.PreviewType == "Image")
+        {
+            return preview.FilePath;
+        }
+
+        // If no preview, grab the first available image
+        var anyImage = item.PrintFiles.FirstOrDefault(w => w.FileType?.PreviewType == "Image");
+        if (anyImage != null)
+        {
+            return anyImage.FilePath;
+        }
+
+        // Fallback to placeholder
+        return "/img/no-images.png";
+    }
+
+    public string GetFormattedFileSize(PrintBed.Models.Print item)
+    {
+        // 1. Handle empty or null cases immediately
+        if (item.PrintFiles == null || !item.PrintFiles.Any()) return "0 B";
+
+        // 2. Sum the total bytes
+        double len = item.PrintFiles.Sum(s => s.FileSize);
+
+        // 3. Define the units
+        string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+        int order = 0;
+
+        // 4. Divide by 1024 until the number is manageable
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+
+        // 5. Return formatted string (0.## formats to 2 decimal places max)
+        return $"{len:0.##} {sizes[order]}";
+    }
 }

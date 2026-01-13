@@ -45,7 +45,7 @@ namespace PrintBed.Controllers
             [FromQuery(Name = "page")] int page = 1,
             [FromQuery(Name = "search")] string search = "",            
             [FromQuery(Name = "sort")] string sort = "Name", 
-            [FromQuery(Name = "direction")] string direction = "DESC")
+            [FromQuery(Name = "direction")] string direction = "ASC")
         {
             int itemsPerPage = 12;
             int totalPages = 0;
@@ -105,8 +105,8 @@ namespace PrintBed.Controllers
                 new SelectListItem("Created Date", "Created"),
             }, "Value", "Text", sort);
             SelectList DirectionList = new SelectList(new List<SelectListItem>() {
-                new SelectListItem("Descending", "DESC"),
                 new SelectListItem("Ascending", "ASC"),
+                new SelectListItem("Descending", "DESC"),                
             }, "Value", "Text", direction);
 
             ViewData["DirectionList"] = DirectionList;

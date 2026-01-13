@@ -8,6 +8,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 init();
 
+function init() {
+    //loop though all divs with data-modelviewer="true"
+    const elems = document.querySelectorAll('[data-modelviewer="true"]');
+    for (const elem of elems) {
+        SetupSTL(elem);
+    }
+}
+
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
@@ -15,14 +23,6 @@ function getRandomColor() {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
-}
-
-function init() {
-    //loop though all divs with data-modelviewer="true"
-    const elems = document.querySelectorAll('[data-modelviewer="true"]');
-    for (const elem of elems) {
-        SetupSTL(elem);
-    }
 }
 
 function SetupSTL(elem) {
