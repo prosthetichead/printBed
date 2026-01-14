@@ -62,17 +62,22 @@ namespace PrintBed.Controllers
             }
             foreach(var printTag in tag.PrintTags)
             {
-                if (moveToId != null)
-                {
-                    var newPrintTag = new PrintTag
-                    {
-                        PrintId = printTag.PrintId,
-                        TagId = moveToId
-                    };
-                    _context.PrintTag.Add(newPrintTag);
-                }
                 _context.PrintTag.Remove(printTag);
 
+                if (moveToId != null)
+                {
+                    var exists = _context.PrintTag.Any(w => w.PrintId == printTag.PrintId && w.TagId == moveToId);
+                    if (!exists)
+                    {
+                        var newPrintTag = new PrintTag
+                        {
+                            Id = printTag.PrintId + "#" + moveToId,
+                            PrintId = printTag.PrintId,
+                            TagId = moveToId
+                        };
+                        _context.PrintTag.Add(newPrintTag);
+                    }
+                }  
             }
             _context.Tag.Remove(tag);
             await _context.SaveChangesAsync();
@@ -80,6 +85,5 @@ namespace PrintBed.Controllers
 
             return RedirectToAction("Settings", "Home");
         }
-
     }
 }

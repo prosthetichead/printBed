@@ -1,33 +1,114 @@
 ﻿@model PrintBed.Models.Category
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Category";
+    int printCount = Model.Prints.Count();
 }
 
-<h1>Delete</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
 
-<h3>Are you sure you want to delete this category?</h3>
-<div>
-    <h4>@Html.DisplayTextFor(model => model.Name)</h4>
-    <hr />
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-tags-fill me-2"></i>Delete Category
+                    </h4>
+                </div>
 
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        
-        <p>@Model.Prints.Count() prints use this category.</p>
+                <div class="card-body p-4 text-center">
 
-        <label for="category-select">Move prints to category</label>
-        <select id="category-select" name="moveToId" asp-items="ViewBag.CategoryId"></select>
-        
-        
-        <input type="submit" value="Delete" class="btn btn-danger" />
-    </form>
+                    <h3 class="fw-bold text-danger mb-3">Are you sure?</h3>
+                    <p class="lead text-muted mb-4">
+                        Do you really want to delete <strong class="text-light-emphasis">@Model.Name</strong>?
+                        <br />
+                        <span class="fs-6 text-danger">This process cannot be undone.</span>
+                    </p>
+
+                    <div class="card border-0 mb-4 text-start">
+                        <div class="row g-0">
+                            <div class="col-md-4 d-flex align-items-center justify-content-center bg-secondary-subtle rounded" style="min-height: 200px;">
+                                @if (string.IsNullOrWhiteSpace(Model.ImagePath))
+                                {
+                                    <i class="bi bi-tag text-secondary" style="font-size: 3rem;"></i>
+                                }
+                                else
+                                {
+                                    <img src="@Model.ImagePath" class="d-block w-100 h-100 object-fit-scale" style="max-height: 150px; object-fit: contain;" />
+                                }                           
+                            </div>
+
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-4 text-secondary fw-bold text-uppercase small">Name</div>
+                                        <div class="col-8 fw-bold">@Html.DisplayFor(model => model.Name)</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 text-secondary fw-bold text-uppercase small">Prints</div>
+                                        <div class="col-8">
+                                            @if (printCount > 0)
+                                            {
+                                                <span class="badge bg-warning text-dark">@printCount assigned</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">Empty</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="Id" />
+
+                        @if (printCount > 0)
+                        {
+                            <div class="alert alert-warning text-start shadow-sm mb-4" role="alert">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
+                                    <span class="fw-bold">Action Required</span>
+                                </div>
+                                <p class="small mb-2">
+                                    This category contains <strong>@printCount</strong> prints. Please select a new category to move them to:
+                                </p>
+
+                                <select id="category-select" name="moveToId" asp-items="ViewBag.CategoryId" class="form-select border-warning"></select>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success text-start mb-4 py-2 small">
+                                <i class="bi bi-check-circle-fill me-2"></i> This category is empty. No prints need to be moved.
+                            </div>
+                        }
+
+                        <div class="d-flex justify-content-center gap-3 mt-4">
+                           
+                            <a asp-action="Settings" asp-controller="Home" class="btn btn-outline-secondary px-4">Cancel</a>                            
+
+                            <input type="submit" value="Delete Category" class="btn btn-danger px-4 shadow-sm" />
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <script>
-        new SlimSelect({
-            select: '#category-select'
-        });
+        // Only initialize SlimSelect if the element actually exists (i.e. if count > 0)
+        var selectElement = document.getElementById('category-select');
+        if (selectElement) {
+            new SlimSelect({
+                select: '#category-select'
+            });
+        }
     </script>
 }

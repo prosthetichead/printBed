@@ -1,26 +1,10 @@
 ﻿@model PrintBed.Models.PrintDetailPage
+@using PrintBed.Extensions
 
 @{
     ViewData["Title"] = "Details";
 }
 
-@functions {
-    
-    public string GetFormattedFileSize(double fileSize)
-    {
-        if (fileSize <= 0) return "0 B";
-        double len = fileSize;
-        string[] sizes = { "B", "KB", "MB", "GB", "TB" };
-        int order = 0;
-        while (len >= 1024 && order < sizes.Length - 1) { order++; len = len / 1024; }
-        return $"{len:0.##} {sizes[order]}";
-    }
-    
-    public List<string> GetUniqueExtensions(IEnumerable<PrintBed.Models.PrintFile> files)
-    {
-        return files.Select(f => f.FileExtension).Distinct().OrderBy(x => x).ToList();
-    }
-}
 
 <div id="drop-zone-fullpage">
     <div class="d-flex justify-content-center">
@@ -114,10 +98,10 @@
                                             <select name="type" class="form-select form-select-sm bg-dark text-light border-secondary" onchange="this.form.submit()">
                                                 <option value="all">All Types</option>
                                                 @* You might need to populate this list from ViewBag or a separate helper if the files are paginated *@
-                                                <option value=".stl" selected="@(Model.CurrentType == ".stl")">.stl</option>
-                                                <option value=".gcode" selected="@(Model.CurrentType == ".gcode")">.gcode</option>
-                                                <option value=".png" selected="@(Model.CurrentType == ".png")">.png</option>
-                                                <option value=".jpg" selected="@(Model.CurrentType == ".jpg")">.jpg</option>
+                                                @foreach (var ext in Model.FileExts)
+                                                {
+                                                    <option value="@ext" selected="@(Model.CurrentType == ext)">@ext</option>
+                                                }
                                             </select>
                                         </div>
 
@@ -187,7 +171,7 @@
                                             </div>
                                             <div class="col-6">
                                                 <span class="d-block text-secondary text-uppercase fw-bold" style="font-size: 0.65rem;">Size</span>
-                                                <div class="mt-1"><span class="text-white small">@GetFormattedFileSize(item.FileSize)</span></div>
+                                                <div class="mt-1"><span class="text-white small">@(item.FileSize.ToPrettySize())</span></div>
                                             </div>
                                         </div>
                                     </div>
@@ -238,7 +222,7 @@
                                                 }
                                             </td>
                                             <td><span class="badge bg-secondary text-light border border-secondary">@item.FileExtension</span></td>
-                                            <td class="text-secondary small font-monospace">@GetFormattedFileSize(item.FileSize)</td>
+                                            <td class="text-secondary small font-monospace">@item.FileSize.ToPrettySize()</td>
                                             <td class="text-end">
                                                 <div class="btn-group btn-group-sm">
                                                     <a class="btn btn-outline-secondary" asp-action="Edit" asp-controller="PrintFiles" asp-route-id="@item.Id"><img src="/img/pencil.png" class="img-icon-sm" /></a>

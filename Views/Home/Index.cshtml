@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<PrintBed.Models.Print>
+@using PrintBed.Extensions
 
 @{
     ViewData["Title"] = "Home Page";
@@ -261,24 +262,7 @@
 
     public string GetFormattedFileSize(PrintBed.Models.Print item)
     {
-        // 1. Handle empty or null cases immediately
-        if (item.PrintFiles == null || !item.PrintFiles.Any()) return "0 B";
-
-        // 2. Sum the total bytes
         double len = item.PrintFiles.Sum(s => s.FileSize);
-
-        // 3. Define the units
-        string[] sizes = { "B", "KB", "MB", "GB", "TB" };
-        int order = 0;
-
-        // 4. Divide by 1024 until the number is manageable
-        while (len >= 1024 && order < sizes.Length - 1)
-        {
-            order++;
-            len = len / 1024;
-        }
-
-        // 5. Return formatted string (0.## formats to 2 decimal places max)
-        return $"{len:0.##} {sizes[order]}";
+        return len.ToPrettySize();
     }
 }

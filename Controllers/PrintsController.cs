@@ -59,10 +59,20 @@ namespace PrintBed.Controllers
                 .Skip((page - 1) * itemsPerPage)
                 .Take(itemsPerPage)
                 .ToListAsync();
+
+            //get distinct file extensions for filter dropdown
+            var fileExts = await _context.PrintFile
+                .Where(f => f.PrintId == id)
+                .OrderBy(f => f.FileExtension)
+                .Select(f => f.FileExtension)                
+                .Distinct()
+                .ToListAsync();
+
             PrintDetailPage printDetailPage = new PrintDetailPage
             {
                 Print = print,
                 Files = paginatedFiles,
+                FileExts = fileExts,
                 totalPages = totalPages,
                 currentPage = page,
                 CurrentSearch = search,

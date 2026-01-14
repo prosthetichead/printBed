@@ -1,19 +1,110 @@
 ﻿@model PrintBed.Models.Tag
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Tag";
+    // Check for null to prevent errors if PrintTags isn't loaded
+    int printCount = Model.PrintTags != null ? Model.PrintTags.Count : 0;
 }
 
-<h1>Delete Tag</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
 
-<h3>Are you sure you want to delete the tag @Html.DisplayTextFor(model => model.Name)?</h3>
-<div>
-    <p>@Html.DisplayTextFor(model => model.PrintTags.Count) prints use this Tag</p>
-    <hr />
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-tag-fill me-2"></i>Delete Tag
+                    </h4>
+                </div>
 
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-controller="Home" asp-action="Settings">Cancel</a>
-    </form>
+                <div class="card-body p-4 text-center">
+
+                    <h3 class="fw-bold text-danger mb-3">Are you sure?</h3>
+                    <p class="lead text-muted mb-4">
+                        Do you really want to delete the tag <strong class="text-light-emphasis">@Model.Name</strong>?
+                        <br />
+                        <span class="fs-6 text-danger">This process cannot be undone.</span>
+                    </p>
+
+                    <div class="card border-0 mb-4 text-start">
+                        <div class="row g-0">
+                            <div class="col-md-4 d-flex align-items-center justify-content-center bg-secondary-subtle rounded" style="min-height: 200px;">
+                                <i class="bi bi-hash text-secondary" style="font-size: 3rem;"></i>
+                            </div>
+
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-4 text-secondary fw-bold text-uppercase small">Name</div>
+                                        <div class="col-8 fw-bold">@Html.DisplayFor(model => model.Name)</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 text-secondary fw-bold text-uppercase small">Usage</div>
+                                        <div class="col-8">
+                                            @if (printCount > 0)
+                                            {
+                                                <span class="badge bg-warning text-dark">@printCount assigned</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">Unused</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="Id" />
+
+                        @if (printCount > 0)
+                        {
+                            <div class="alert alert-warning text-start shadow-sm mb-4" role="alert">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-exclamation-circle-fill fs-4 me-2"></i>
+                                    <span class="fw-bold">Action Required</span>
+                                </div>
+                                <p class="small mb-2">
+                                    This tag is currently used on <strong>@printCount</strong> prints. Please select a new tag to reassign them to:
+                                </p>
+
+                                <select id="tag-select" name="moveToId" asp-items="ViewBag.TagId" class="form-select border-warning">                                   
+                                    <option value="">Do not move (Remove tag only)</option>
+                                </select>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success text-start mb-4 py-2 small">
+                                <i class="bi bi-check-circle-fill me-2"></i> This tag is not used. Safe to delete.
+                            </div>
+                        }
+
+                        <div class="d-flex justify-content-center gap-3 mt-4">
+
+                            <a asp-controller="Home" asp-action="Settings" class="btn btn-outline-secondary px-4">Cancel</a>
+
+                            <input type="submit" value="Delete Tag" class="btn btn-danger px-4 shadow-sm" />
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Only initialize SlimSelect if the element actually exists
+        var selectElement = document.getElementById('tag-select');
+        if (selectElement) {
+            new SlimSelect({
+                select: '#tag-select'
+            });
+        }
+    </script>
+}
