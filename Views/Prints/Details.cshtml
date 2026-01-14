@@ -96,48 +96,44 @@
             <div id="panelFiles" class="accordion-collapse collapse show">
                 <div class="accordion-body">
 
-                    <div class="card bg-dark border-secondary mb-3 p-2">
-                        <div class="row g-2 align-items-center">
+                    
 
-                            <div class="col-12 col-md-4">
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-secondary border-secondary text-light"><i class="bi bi-search"></i>Search</span>
-                                    <input type="text" id="fileSearchInput" class="form-control bg-dark text-light border-secondary" placeholder="Filename..." onkeyup="filterFiles()">
+                            <form method="get" asp-action="Details" asp-controller="Prints" asp-route-id="@Model.Print.Id">
+                                <div class="card bg-dark border-secondary mb-3 p-2">
+                                    <div class="row g-2 align-items-center">
+
+                                        <div class="col-12 col-md-4">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-secondary border-secondary text-light"><i class="bi bi-search"></i>Search</span>
+                                                <input type="text" name="search" class="form-control bg-dark text-light border-secondary"
+                                                       placeholder="Filename..." value="@Model.CurrentSearch" onchange="this.form.submit()">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6 col-md-3">
+                                            <select name="type" class="form-select form-select-sm bg-dark text-light border-secondary" onchange="this.form.submit()">
+                                                <option value="all">All Types</option>
+                                                @* You might need to populate this list from ViewBag or a separate helper if the files are paginated *@
+                                                <option value=".stl" selected="@(Model.CurrentType == ".stl")">.stl</option>
+                                                <option value=".gcode" selected="@(Model.CurrentType == ".gcode")">.gcode</option>
+                                                <option value=".png" selected="@(Model.CurrentType == ".png")">.png</option>
+                                                <option value=".jpg" selected="@(Model.CurrentType == ".jpg")">.jpg</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-6 col-md-5 d-flex justify-content-end gap-2">
+                                            <div class="btn-group" role="group">
+                                                <input type="radio" class="btn-check" name="viewToggle" id="btnRadioGrid" autocomplete="off" checked onclick="toggleView('grid')">
+                                                <label class="btn btn-outline-secondary btn-sm" for="btnRadioGrid"><i class="bi bi-grid-fill"></i></label>
+
+                                                <input type="radio" class="btn-check" name="viewToggle" id="btnRadioList" autocomplete="off" onclick="toggleView('list')">
+                                                <label class="btn btn-outline-secondary btn-sm" for="btnRadioList"><i class="bi bi-list-ul"></i></label>
+                                            </div>
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="showFilePick();">+ Upload</button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="col-6 col-md-3">
-                                <select id="fileTypeFilter" class="form-select form-select-sm bg-dark text-light border-secondary" onchange="filterFiles()">
-                                    <option value="all">All Types</option>
-                                    @foreach (var ext in GetUniqueExtensions(Model.Files))
-                                    {
-                                        <option value="@ext">@ext</option>
-                                    }
-                                </select>
-                            </div>
-
-                            <div class="col-6 col-md-5 d-flex justify-content-end gap-2">
-                                <div class="btn-group" role="group">
-                                    <input type="radio" class="btn-check" name="viewToggle" id="btnRadioGrid" autocomplete="off" checked onclick="toggleView('grid')">
-                                    <label class="btn btn-outline-secondary btn-sm" for="btnRadioGrid" title="Grid View">
-                                        <i class="bi bi-grid-fill"></i>
-                                        @* <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-grid-fill" viewBox="0 0 16 16"><path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3A1.5 1.5 0 0 1 15 10.5v3A1.5 1.5 0 0 1 13.5 15h-3A1.5 1.5 0 0 1 9 13.5v-3z" /></svg> *@
-                                    </label>
-
-                                    <input type="radio" class="btn-check" name="viewToggle" id="btnRadioList" autocomplete="off" onclick="toggleView('list')">
-                                    <label class="btn btn-outline-secondary btn-sm" for="btnRadioList" title="List View">
-                                        <i class="bi bi-list-ul"></i>
-                                        @* <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" /></svg> *@
-                                    </label>
-                                </div>
-
-                                <button class="btn btn-primary btn-sm" onclick="showFilePick();">
-                                    <span class="fw-bold">+ Upload</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
+                            </form>
                     <form id="uploadForm" enctype="multipart/form-data">
                         <input class="disabled" type='file' id="uploadedFile" name="uploadedFile" style="display:none" />
                         <input type="hidden" id="printId" name="printId" value="@Model?.Print.Id" />
@@ -260,16 +256,35 @@
                     <div class="row mt-3">
                         <div class="col">
                             <nav>
-                                <ul class="pagination pagination-sm justify-content-center">
-                                    <li class="page-item">
-                                        <a class="page-link @(Model.currentPage <= 1 ? "disabled" : "") " href="/Prints/Details/@(Model.Print.Id)?page=@(Model.currentPage - 1)">Previous</a>
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item @(Model.currentPage <= 1 ? "disabled" : "")">
+                                        <a class="page-link" 
+                                           asp-action="Details" 
+                                           asp-route-id="@Model.Print.Id" 
+                                           asp-route-page="@(Model.currentPage - 1)"
+                                           asp-route-search="@Model.CurrentSearch"
+                                           asp-route-type="@Model.CurrentType">Previous</a>
                                     </li>
+
                                     @for (int i = 1; i <= Model.totalPages; i++)
                                     {
-                                        <li class="page-item"><a class="page-link @(Model.currentPage == i ? "disabled" : "")" href="/Prints/Details/@(Model.Print.Id)?page=@(i)">@i</a></li>
+                                        <li class="page-item @(Model.currentPage == i ? "active" : "")">
+                                            <a class="page-link" 
+                                               asp-action="Details" 
+                                               asp-route-id="@Model.Print.Id" 
+                                               asp-route-page="@i"
+                                               asp-route-search="@Model.CurrentSearch"
+                                               asp-route-type="@Model.CurrentType">@i</a>
+                                        </li>
                                     }
-                                    <li class="page-item">
-                                        <a class="page-link @(Model.currentPage >= Model.totalPages ? "disabled" : "") " href="/Prints/Details/@(Model.Print.Id)?page=@(Model.currentPage + 1)">Next</a>
+
+                                    <li class="page-item @(Model.currentPage >= Model.totalPages ? "disabled" : "")">
+                                        <a class="page-link" 
+                                           asp-action="Details" 
+                                           asp-route-id="@Model.Print.Id" 
+                                           asp-route-page="@(Model.currentPage + 1)"
+                                           asp-route-search="@Model.CurrentSearch"
+                                           asp-route-type="@Model.CurrentType">Next</a>
                                     </li>
                                 </ul>
                             </nav>

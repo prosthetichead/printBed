@@ -1,55 +1,71 @@
 ﻿@model PrintBed.Models.PrintFile
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Print File";
 }
 
-<h1>Edit</h1>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
 
-<h4>Print File @Model.FilePath</h4>
-<hr />
-<form asp-action="Edit">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" name="referer" value="@ViewBag.Referer" />
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Print File: @Model.FilePath
+                    </h4>
+                </div>
 
-    <div class="row row-cols-2 mb-2">
-        <div class="col">
-            <div class="form-group">
-                <label for="displayname" class="control-label">Display Name</label>
-                <input id="displayname" asp-for="DisplayName" class="form-control" />
-                <span asp-validation-for="DisplayName" class="text-danger"></span>
+                <div class="card-body p-4">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" name="referer" value="@ViewBag.Referer" />
+                        <input type="hidden" asp-for="PrintId" />
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="DisplayName" class="form-control" placeholder="Display Name" />
+                                    <label asp-for="DisplayName">Display Name</label>
+                                    <span asp-validation-for="DisplayName" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="Description" class="form-control" placeholder="Description" />
+                                    <label asp-for="Description"></label>
+                                    <span asp-validation-for="Description" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="IsPreview">
+                                <label class="form-check-label" asp-for="IsPreview">Use as Preview Image</label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            @* Check for referer, otherwise fall back to the specific Print Details page *@
+                            @if (!string.IsNullOrEmpty(ViewBag.Referer?.ToString()))
+                            {
+                                <a href="@ViewBag.Referer" class="btn btn-link text-decoration-none text-muted">&larr; Back</a>
+                            }
+                            else
+                            {
+                                <a asp-action="Details" asp-controller="Prints" asp-route-id="@Model.PrintId" class="btn btn-link text-decoration-none text-muted">&larr; Back to Print</a>
+                            }
+
+                            <input type="submit" value="Save Changes" class="btn btn-primary px-5" />
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-        <div class="col">
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
+
         </div>
     </div>
-
-    <div class="row row-cols-2 mb-2">
-        <div class="col">
-            <div class="form-group">
-                <label asp-for="IsPreview" class="control-label"></label>
-                <input asp-for="IsPreview"  />
-            </div>
-        </div>
-    </div>
-            
-    <div class="row row-cols-2 mb-2">
-        <div class="col">
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </div>
-    </div>
-</form>
-
-<div>
-    <a asp-action="Details" asp-controller="Prints" asp-route-id="@Model.PrintId">Back to Print</a>
 </div>
 
 @section Scripts {
