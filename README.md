@@ -3,10 +3,12 @@
 printBed is a self-hosted asset management app designed to help users efficiently sort through a large number of 3D printer model assets. With printBed, you can organize, search, and categorize your 3D printer models, making it easier to find the right model for your printing needs.
 
 > [!CAUTION]
-> **printBed is in early Alpha.** Use at your own risk. Features may be broken or unstable. Please report any bugs or issues [here](https://github.com/prosthetichead/printBed/issues).
+> **printBed is currently in Alpha.**
+>
+> This project is under active development. You are welcome to use it, but please be aware that features may change or break without notice. If you encounter any bugs or issues, please report them [here](https://github.com/prosthetichead/printBed/issues).
 
 
-## Features :nerd_face:	
+## Features
 
 - **Asset Organization**: Easily organize your 3D printer model assets into categories.
 - **Search Functionality**: Quickly search through your collection of models using keywords or tags.
@@ -14,7 +16,7 @@ printBed is a self-hosted asset management app designed to help users efficientl
 - **User-Friendly Interface**: Intuitive interface for easy navigation and management of your assets.
 - **Self-Hosted**: Keep your model assets private by hosting printBed on your own server.
 
-## Installation :floppy_disk:
+## Installation
 Currently printBed is only available via Docker.
 
 Docker Compose
@@ -32,14 +34,14 @@ services:
 * Replace [DB Path] with local location of database for example ~/appdata/printBed
 * Replace [Print Files Path] with local path for storing print files for example ~/mnt/storage/3d-prints
 
-## Previews :mag:
+## Previews
 ![image](https://github.com/prosthetichead/printBed/assets/1934681/acd72138-31ec-4347-8120-4e0929e7eef4)
 
 https://github.com/prosthetichead/printBed/assets/1934681/57e1357a-4d37-4f53-916a-a306a1a6e82a
 
-## Contributing :thumbsup:
+## Contributing
 While this is a personal project contributions to printBed are welcome! If you have suggestions for new features, improvements, or bug fixes, please submit an issue or pull request on GitHub. 
 
 
-## Acknowledgements :two_hearts:
+## Acknowledgements
 Icons used in this project are from [Flaticon](https://www.flaticon.com/) and were created by [freepik](https://www.flaticon.com/authors/freepik).
