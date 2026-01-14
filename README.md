@@ -14,11 +14,10 @@ printBed is a self-hosted asset management app designed to help users efficientl
 - **Self-Hosted**: Keep your model assets private by hosting printBed on your own server.
 
 ## Installation :floppy_disk:
-Curently printBed is only avalable via Docker.
+Currently printBed is only available via Docker.
 
 Docker Compose
-```
-version: "2.1"
+```yaml
 services:  
   printBed:
     container_name: printBed
@@ -29,8 +28,8 @@ services:
     ports: 
       - 4040:8080
 ```
-* Replece [DB Path] with local location of database for example ~/appdata/printBed
-* Replece [Print Files Path] with local path for storing print files for example ~/mnt/storage/3d-prints
+* Replace [DB Path] with local location of database for example ~/appdata/printBed
+* Replace [Print Files Path] with local path for storing print files for example ~/mnt/storage/3d-prints
 
 ## Previews :mag:
 ![image](https://github.com/prosthetichead/printBed/assets/1934681/acd72138-31ec-4347-8120-4e0929e7eef4)
