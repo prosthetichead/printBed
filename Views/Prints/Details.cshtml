@@ -1,167 +1,298 @@
 ﻿@model PrintBed.Models.PrintDetailPage
+@using PrintBed.Extensions
 
 @{
     ViewData["Title"] = "Details";
 }
+
+
 <div id="drop-zone-fullpage">
     <div class="d-flex justify-content-center">
-
         <div id="beforeDrop" class="loading-content">Drop Files to Upload</div>
-
         <div id="afterDrop" style="width:500px; visibility: hidden;">
             <div class="progress" role="progressbar" style="width:500px">
                 <div id="progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%">75%</div>
             </div>
         </div>
-
     </div>
-</div> 
+</div>
 
-<div class="container">
-    <div class="row">
-        <div class="col-9 text-break">
-            <h2 class="ms-2">@Html.DisplayFor(model => model.Print.Name)</h2>
-            <div class="ms-2 "><h6>@Html.DisplayFor(model => model.Print.Description)</h6></div>
+<div class="container mb-5">
+    <div class="row mb-3">
+        <div class="col-12 col-md-9 text-break">
+            <h2 class="fw-bold">@Html.DisplayFor(model => model.Print.Name)</h2>
+            <div class="text-secondary"><h6>@Html.DisplayFor(model => model.Print.Description)</h6></div>
+
+            <div class="d-flex flex-wrap gap-1 mt-2">
+                @if (Model.Print.PrintTags.Count > 0)
+                {
+                    @foreach (PrintTag printTag in Model.Print.PrintTags.OrderBy(o => o.Tag.Name))
+                    {
+                        <span class="badge rounded-pill border border-info text-info bg-transparent">
+                            @printTag.Tag.Name
+                        </span>
+                    }
+                }
+                else
+                {
+                    <span class="badge rounded-pill border border-secondary text-secondary bg-transparent fst-italic">No Tags</span>
+                }
+            </div>
         </div>
-        <div class="col position-relative">
-            <div class="btn-group position-absolute top-50 end-0 translate-middle-y pe-3" role="group">
-                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Edit" asp-controller="Prints" asp-route-id="@Model.Print.Id"><span class="badge"><img src="/img/pencil.png" class="img-icon-sm me-2" alt="Edit" /> Edit</span> </a>
-                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Download" asp-controller="Prints" asp-route-id="@Model.Print.Id"><span class="badge"><img src="/img/download.png" class="img-icon-sm me-2" alt="Edit" /> Download All</span> </a>
-                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Prints" asp-route-id="@Model.Print.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Edit" /> Delete</span></a>
-             </div>
+
+        <div class="col-12 col-md-3 mt-3 mt-md-0 d-flex justify-content-md-end align-items-start gap-2">
+            <div class="btn-group shadow-sm" role="group">
+                <a class="btn btn-outline-secondary btn-sm" asp-action="Edit" asp-controller="Prints" asp-route-id="@Model.Print.Id">
+                    <img src="/img/pencil.png" class="img-icon-sm" alt="Edit" />
+                </a>
+                <a class="btn btn-outline-secondary btn-sm" asp-action="Download" asp-controller="Prints" asp-route-id="@Model.Print.Id">
+                    <img src="/img/download.png" class="img-icon-sm me-1" alt="Download" /> Download All
+                </a>
+                <a class="btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Prints" asp-route-id="@Model.Print.Id">
+                    <img src="/img/garbage.png" class="img-icon-sm" alt="Delete" />
+                </a>
+            </div>
         </div>
     </div>
-    <div class="row ms-2 mb-2 me-2">
-        <div class="col">
-        @if (Model.Print.PrintTags.Count > 0)
-        {
-            @foreach (PrintTag printTag in Model.Print.PrintTags.OrderBy(o => o.Tag.Name))
-            {
-                <span class="badge text-bg-info" style="font-size:10px; margin:0px; padding: 2px 3px 2px 3px">@printTag.Tag.Name</span>
-            }
-        }
-        else
-        {
-            <span class="badge text-bg-warning" style="font-size:10px; margin:0px; padding: 2px 3px 2px 3px">No Tags</span>
-        }
-        </div>
-    </div>
 
-    <div class="accordion" id="accordionPanelsStayOpenExample">
+    <div class="accordion mb-4" id="accordionPanelsStayOpenExample">
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelPrintInstructions" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                    Print Instructions
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelPrintInstructions" aria-expanded="false">
+                    <span class="fw-bold">Print Instructions</span>
                 </button>
             </h2>
             <div id="panelPrintInstructions" class="accordion-collapse collapse">
                 <div class="accordion-body">
-                    <p>
+                    <p class="mb-0">
                         @Html.DisplayFor(model => model.Print.PrintInstructions)
-                    </p>    
+                    </p>
                 </div>
             </div>
         </div>
+
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelFiles" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
-                    Files
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelFiles" aria-expanded="true">
+                    <span class="fw-bold">Files</span>
                 </button>
             </h2>
-            <div id="panelFiles" class="accordion-collapse collapse show ">
+            <div id="panelFiles" class="accordion-collapse collapse show">
                 <div class="accordion-body">
-                    <div class="row mb-2">                    
-                        <div class="col">
-                            <nav>
-                                <ul class="pagination pagination-sm ">
-                                    <li class="page-item">
-                                        <a class="page-link @(Model.currentPage<=1 ? "disabled" : "") " href="/Prints/Details/@(Model.Print.Id)?page=@(Model.currentPage-1)">Previous</a>
-                                    </li>
-                                    @for (int i = 1; i <= Model.totalPages; i++)
-                                    {
-                                        <li class="page-item"><a class="page-link @(Model.currentPage==i ? "disabled" : "")" href="/Prints/Details/@(Model.Print.Id)?page=@(i)">@i</a></li>
-                                    }
-                                    <li class="page-item">
-                                        <a class="page-link @(Model.currentPage>=Model.totalPages ? "disabled" : "") " href="/Prints/Details/@(Model.Print.Id)?page=@(Model.currentPage+1)">Next</a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-                        <div class="col text-end">
-                            <a class="btn btn-primary btn-sm" onclick="showFilePick();">+</a>
-                            <form id="uploadForm" enctype="multipart/form-data">
-                                <input class="disabled" type='file' id="uploadedFile" name="uploadedFile" style="display:none" />
-                                <input type="hidden" id="printId" name="printId" value="@Model?.Print.Id" />
-                            </form>
-                        </div>
-                    </div>
 
-                    <div class="row row-cols-4 g-2">
-                        @foreach (PrintFile item in Model.Files)
-                        {
-                            <div class="col">
-                                <div class="card" style="width: 19rem;">
-                                    @if (item.FileType?.PreviewType == "Model Viewer")
-                                    {
-                                        <div data-modelviewer="true" data-modelviewer-path="@item.FilePath" class="card-img-top border rounded"></div>
-                                    }
-                                    else if (item.FileType?.PreviewType == "Image")
-                                    {
-                                        <img src="@item.FilePath" class="card-img-top object-fit-scale border rounded" />
-                                    }
-                                    else
-                                    {
-                                        <img src="@item.FileType?.ImagePath" class="card-img-top object-fit-scale border rounded" />
-                                    }
-                                    <div class="card-body">
-                                        <h6 class="card-title text-truncate">@item.DisplayName</h6>                                        
-                                    </div>
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item">
-                                            <span class="badge">
-                                                <img src="@item.FileType?.ImagePath" class="img-icon-sm ms-2 me-2" alt="@item.FileType?.Name" title="@item.FileType?.Name" /> @item.FileExtension @(Math.Round(item.FileSize / 1000000, 2)) MB                                                
-                                            </span>
+                    
 
-                                            @if (item.IsPreivew == true)
-                                            {
-                                                <span class="badge text-bg-warning">Preview</span>
-                                            }
+                            <form method="get" asp-action="Details" asp-controller="Prints" asp-route-id="@Model.Print.Id">
+                                <div class="card bg-dark border-secondary mb-3 p-2">
+                                    <div class="row g-2 align-items-center">
 
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div class="btn-group" role="group">
-                                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Edit" asp-controller="PrintFiles" asp-route-id="@item.Id"><span class="badge"><img src="/img/pencil.png" class="img-icon-sm me-2" alt="Edit" /> Edit</span> </a>
-                                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Download" asp-controller="PrintFiles" asp-route-id="@item.Id"><span class="badge"><img src="/img/download.png" class="img-icon-sm me-2" alt="Download" /> Download</span></a>
-                                                <a class="card-link btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="PrintFiles" asp-route-id="@item.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Delete" /> Delete</span></a>
+                                        <div class="col-12 col-md-4">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-secondary border-secondary text-light"><i class="bi bi-search"></i>Search</span>
+                                                <input type="text" name="search" class="form-control bg-dark text-light border-secondary"
+                                                       placeholder="Filename..." value="@Model.CurrentSearch" onchange="this.form.submit()">
                                             </div>
-                                        </li>
-                                    </ul>
+                                        </div>
+
+                                        <div class="col-6 col-md-3">
+                                            <select name="type" class="form-select form-select-sm bg-dark text-light border-secondary" onchange="this.form.submit()">
+                                                <option value="all">All Types</option>
+                                                @* You might need to populate this list from ViewBag or a separate helper if the files are paginated *@
+                                                @foreach (var ext in Model.FileExts)
+                                                {
+                                                    <option value="@ext" selected="@(Model.CurrentType == ext)">@ext</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="col-6 col-md-5 d-flex justify-content-end gap-2">
+                                            <div class="btn-group" role="group">
+                                                <input type="radio" class="btn-check" name="viewToggle" id="btnRadioGrid" autocomplete="off" checked onclick="toggleView('grid')">
+                                                <label class="btn btn-outline-secondary btn-sm" for="btnRadioGrid"><i class="bi bi-grid-fill"></i></label>
+
+                                                <input type="radio" class="btn-check" name="viewToggle" id="btnRadioList" autocomplete="off" onclick="toggleView('list')">
+                                                <label class="btn btn-outline-secondary btn-sm" for="btnRadioList"><i class="bi bi-list-ul"></i></label>
+                                            </div>
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="showFilePick();">+ Upload</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <input class="disabled" type='file' id="uploadedFile" name="uploadedFile" style="display:none" />
+                        <input type="hidden" id="printId" name="printId" value="@Model?.Print.Id" />
+                    </form>
+
+                    <div id="filesGridView" class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
+                        @foreach (PrintBed.Models.PrintFile item in Model.Files)
+                        {
+                            <div class="col file-item" data-name="@item.DisplayName.ToLower()" data-ext="@item.FileExtension">
+                                <div class="card h-100 text-bg-dark border-secondary">
+
+                                    <div class="img-wrapper rounded-top position-relative border-bottom border-secondary" style="height: 250px; overflow: hidden;">
+                                        @if (item.FileType?.PreviewType == "Model Viewer")
+                                        {
+                                            <div data-modelviewer="true" data-modelviewer-path="@item.FilePath" class="w-100 h-100"></div>
+                                        }
+                                        else if (item.FileType?.PreviewType == "Image")
+                                        {
+                                            <img src="@item.FilePath" class="d-block w-100 h-100 object-fit-scale" />
+                                        }
+                                        else
+                                        {
+                                            <div class="d-flex align-items-center justify-content-center h-100">
+                                                <img src="@item.FileType?.ImagePath" class="object-fit-contain" style="max-height: 60%; max-width: 60%;" />
+                                            </div>
+                                        }
+
+                                        @if (item.IsPreview == true)
+                                        {
+                                            <div class="position-absolute top-0 end-0 p-2">
+                                                <span class="badge bg-warning text-dark border shadow-sm">Preview</span>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div class="card-body py-3 text-center">
+                                        <h6 class="card-title text-truncate fw-bold mb-0 lh-base" title="@item.DisplayName">@item.DisplayName</h6>
+                                    </div>
+
+                                    <div class="card-body py-2 border-top border-secondary bg-transparent">
+                                        <div class="row text-center g-0">
+                                            <div class="col-6 border-end border-secondary">
+                                                <span class="d-block text-secondary text-uppercase fw-bold" style="font-size: 0.65rem;">Type</span>
+                                                <div class="d-flex align-items-center justify-content-center gap-1 mt-1">
+                                                    @if (!string.IsNullOrEmpty(item.FileType?.ImagePath))
+                                                    {
+                                                        <img src="@item.FileType?.ImagePath" class="rounded-1" style="width: 16px; height: 16px; object-fit: cover;" />
+                                                    }
+                                                    <span class="text-white small">@item.FileExtension</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <span class="d-block text-secondary text-uppercase fw-bold" style="font-size: 0.65rem;">Size</span>
+                                                <div class="mt-1"><span class="text-white small">@(item.FileSize.ToPrettySize())</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer bg-transparent border-secondary p-2">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a class="btn btn-sm btn-outline-secondary border-0" asp-action="Edit" asp-controller="PrintFiles" asp-route-id="@item.Id" title="Edit"><img src="/img/pencil.png" class="img-icon-sm" /></a>
+                                            <a class="btn btn-sm btn-outline-secondary border-0" asp-action="Download" asp-controller="PrintFiles" asp-route-id="@item.Id" title="Download"><img src="/img/download.png" class="img-icon-sm" /></a>
+                                            <a class="btn btn-sm btn-outline-secondary border-0" asp-action="Delete" asp-controller="PrintFiles" asp-route-id="@item.Id" title="Delete"><img src="/img/garbage.png" class="img-icon-sm" /></a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         }
                     </div>
+
+                    <div id="filesListView" class="d-none">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover align-middle border-secondary">
+                                <thead>
+                                    <tr class="table-secondary text-uppercase small">
+                                        <th style="width: 60px;">Preview</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Size</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (PrintBed.Models.PrintFile item in Model.Files)
+                                    {
+                                        <tr class="file-item" data-name="@item.DisplayName.ToLower()" data-ext="@item.FileExtension">
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(item.FileType?.ImagePath))
+                                                {
+                                                    <img src="@item.FileType?.ImagePath" style="width: 32px; height: 32px; object-fit: contain;" class="rounded bg-light p-1" />
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-file-earmark text-secondary fs-4"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold">@item.DisplayName</span>
+                                                @if (item.IsPreview == true)
+                                                {
+                                                    <span class="badge bg-warning text-dark ms-2" style="font-size: 0.6em">Preview</span>
+                                                }
+                                            </td>
+                                            <td><span class="badge bg-secondary text-light border border-secondary">@item.FileExtension</span></td>
+                                            <td class="text-secondary small font-monospace">@item.FileSize.ToPrettySize()</td>
+                                            <td class="text-end">
+                                                <div class="btn-group btn-group-sm">
+                                                    <a class="btn btn-outline-secondary" asp-action="Edit" asp-controller="PrintFiles" asp-route-id="@item.Id"><img src="/img/pencil.png" class="img-icon-sm" /></a>
+                                                    <a class="btn btn-outline-secondary" asp-action="Download" asp-controller="PrintFiles" asp-route-id="@item.Id"><img src="/img/download.png" class="img-icon-sm" /></a>
+                                                    <a class="btn btn-outline-secondary" asp-action="Delete" asp-controller="PrintFiles" asp-route-id="@item.Id"><img src="/img/garbage.png" class="img-icon-sm" /></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col">
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item @(Model.currentPage <= 1 ? "disabled" : "")">
+                                        <a class="page-link" 
+                                           asp-action="Details" 
+                                           asp-route-id="@Model.Print.Id" 
+                                           asp-route-page="@(Model.currentPage - 1)"
+                                           asp-route-search="@Model.CurrentSearch"
+                                           asp-route-type="@Model.CurrentType">Previous</a>
+                                    </li>
+
+                                    @for (int i = 1; i <= Model.totalPages; i++)
+                                    {
+                                        <li class="page-item @(Model.currentPage == i ? "active" : "")">
+                                            <a class="page-link" 
+                                               asp-action="Details" 
+                                               asp-route-id="@Model.Print.Id" 
+                                               asp-route-page="@i"
+                                               asp-route-search="@Model.CurrentSearch"
+                                               asp-route-type="@Model.CurrentType">@i</a>
+                                        </li>
+                                    }
+
+                                    <li class="page-item @(Model.currentPage >= Model.totalPages ? "disabled" : "")">
+                                        <a class="page-link" 
+                                           asp-action="Details" 
+                                           asp-route-id="@Model.Print.Id" 
+                                           asp-route-page="@(Model.currentPage + 1)"
+                                           asp-route-search="@Model.CurrentSearch"
+                                           asp-route-type="@Model.CurrentType">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
-    </div> 
+
+    </div>
 </div>
 
-
-
-
 @section Scripts {
-
     <script type="module" src="/js/ModelViewer.js"></script>
     <script>
-              
         var dropZone = document.getElementById('drop-zone-fullpage');
         dropZone.style.visibility = "hidden";
         var fileInput = document.getElementById('uploadedFile');
         var form = document.getElementById('uploadForm');
-        var beforeDrop = document.getElementById('beforeDrop'); 
-        var afterDrop = document.getElementById('afterDrop'); 
-        var progress = document.getElementById('progress');        
-                
+        var beforeDrop = document.getElementById('beforeDrop');
+        var afterDrop = document.getElementById('afterDrop');
+        var progress = document.getElementById('progress');
+
         function allowDrag(e) {
             if (true) {  // Test that the item being dragged is a valid one this currently allows ALL files
                 e.dataTransfer.dropEffect = 'copy';
@@ -169,7 +300,7 @@
             }
         }
         function handleDrop(e) {
-            e.preventDefault();            
+            e.preventDefault();
             fileInput.files = e.dataTransfer.files;
             uploadFile();
         }
@@ -187,14 +318,14 @@
             dropZone.style.visibility = "hidden";
         });
         dropZone.addEventListener('drop', handleDrop);
-                    
+
         fileInput.addEventListener('change', function(e){
             uploadFile();
         });
 
         function uploadFile(){
-            var recordIdInput = document.getElementById('printId');            
-            
+            var recordIdInput = document.getElementById('printId');
+
             //show dropzone and show afterDrop and hide before drop
             dropZone.style.visibility = "visible";
             afterDrop.style.visibility = "visible";
@@ -205,8 +336,6 @@
 
             // Submit the form asynchronously
             var xhr = new XMLHttpRequest();
-
-            //progressBar.style.display = 'initial';
 
             xhr.upload.addEventListener('progress', function (event) {
                 if (event.lengthComputable) {
@@ -221,11 +350,8 @@
                     // Handle the response from the server
                     if (xhr.status === 200) {
                         console.log("File uploaded successfully!");
-
                         location.reload();
-
                     } else {
-
                         console.error("Error uploading file!");
                     }
                 }
@@ -235,8 +361,39 @@
             xhr.send(new FormData(form));
         }
 
+        function toggleView(viewType) {
+            const grid = document.getElementById('filesGridView');
+            const list = document.getElementById('filesListView');
+
+            if (viewType === 'grid') {
+                grid.classList.remove('d-none');
+                list.classList.add('d-none');
+            } else {
+                grid.classList.add('d-none');
+                list.classList.remove('d-none');
+            }
+        }
+
+        function filterFiles() {
+            const searchVal = document.getElementById('fileSearchInput').value.toLowerCase();
+            const typeVal = document.getElementById('fileTypeFilter').value;
+
+            // Get all items (both grid cards and list rows have class 'file-item')
+            const items = document.querySelectorAll('.file-item');
+
+            items.forEach(item => {
+                const name = item.getAttribute('data-name');
+                const ext = item.getAttribute('data-ext');
+
+                const matchesSearch = name.includes(searchVal);
+                const matchesType = (typeVal === 'all') || (ext === typeVal);
+
+                if (matchesSearch && matchesType) {
+                    item.classList.remove('d-none');
+                } else {
+                    item.classList.add('d-none');
+                }
+            });
+        }
     </script>
 }
-
-
-

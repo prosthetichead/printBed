@@ -1,38 +1,90 @@
 ﻿@model PrintBed.Models.PrintFile
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete File";
 }
 
-<h1 class="text-danger">Delete @Html.DisplayFor(model => model.DisplayName)?!</h1>
-<h3 class="text-danger-emphasis">Are You Sure You Want to Delete This File?</h3>
-<h5 class="text-danger-emphasis">This File and All Details will be Deleted Permanently</h5>
-<hr />
-<div class="container">
-    <dl class="row">
-        <dt class = "col-sm-2">
-            Name
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DisplayName)
-        </dd>
-        <dt class = "col-sm-2">
-            Full File Path
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FilePath    )
-        </dd>
-        <dt class = "col-sm-2">
-            File Type
-        </dt>
-        <dd class = "col-sm-10">
-            @Model.FileType?.Name
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Details" asp-controller="Prints" asp-route-id="@Model.PrintId">No Go Back!</a>
-    </form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Confirmation
+                    </h4>
+                </div>
+
+                <div class="card-body p-4 text-center">
+
+                    <h3 class="fw-bold text-danger mb-3">Are you sure?</h3>
+                    <p class="lead text-muted mb-4">
+                        Do you really want to delete <strong class="text-light-emphasis">@Model.DisplayName</strong>?
+                        <br />
+                        <span class="fs-6 text-danger">This process cannot be undone.</span>
+                    </p>
+
+                    <div class="card border-0 mb-4 text-start">
+                        <div class="row g-0">
+                            <div class="col-md-4 d-flex align-items-center justify-content-center bg-secondary-subtle rounded" style="min-height: 200px;">
+                                @if (Model.FileType?.PreviewType == "Model Viewer")
+                                {
+                                    <div data-modelviewer="true" data-modelviewer-path="@Model.FilePath" class="w-100 h-100"></div>
+                                }
+                                else if (Model.FileType?.PreviewType == "Image")
+                                {
+                                    <img src="@Model.FilePath" class="d-block w-100 h-100 object-fit-scale" style="max-height: 150px; object-fit: contain;" />
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center justify-content-center h-100">
+                                        <img src="@Model.FileType?.ImagePath" class="object-fit-contain" style="max-height: 150px; object-fit: contain;" />
+                                    </div>
+                                }
+ 
+                            </div>
+
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-4 text-secondary fw-bold text-uppercase small">File Name</div>
+                                        <div class="col-8">@Html.DisplayFor(model => model.DisplayName)</div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-4 text-secondary fw-bold text-uppercase small">Extension</div>
+                                        <div class="col-8"><span class="badge bg-secondary">@Model.FileExtension</span></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 text-secondary fw-bold text-uppercase small">Full Path</div>
+                                        <div class="col-8 text-break small font-monospace text-muted">@Model.FilePath</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete" class="d-flex justify-content-center gap-3">
+                        <input type="hidden" asp-for="Id" />
+
+                        @if (!string.IsNullOrEmpty(ViewBag.Referer?.ToString()))
+                        {
+                            <a href="@ViewBag.Referer" class="btn btn-outline-secondary px-4">Cancel</a>
+                        }
+                        else
+                        {
+                            <a asp-action="Details" asp-controller="Prints" asp-route-id="@Model.PrintId" class="btn btn-outline-secondary px-4">Cancel</a>
+                        }
+
+                        <input type="submit" value="Yes, Delete it" class="btn btn-danger px-4 shadow-sm" />
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script type="module" src="/js/ModelViewer.js"></script>
+}

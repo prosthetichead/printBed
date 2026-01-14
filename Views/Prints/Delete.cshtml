@@ -1,41 +1,95 @@
 ﻿@model PrintBed.Models.Print
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Print";
+
+    
+    var previewFile = Model.PrintFiles.FirstOrDefault(f => f.IsPreview)
+                      ?? Model.PrintFiles.FirstOrDefault(f => f.FileType?.PreviewType == "Image");
 }
 
-<h1 class="text-danger">Delete @Html.DisplayFor(model => model.Name)?!</h1>
-<h3 class="text-danger-emphasis">Are You Sure You Want to Delete This Print?</h3>
-<h5 class="text-danger-emphasis">All files and Print Details will be Deleted Permanently</h5>
-<hr />
-<div class="container">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
 
-    <dl class="row">
-        <dt class = "col-sm-2">
-            Print Name
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class="col-sm-2">
-            Number of Files
-        </dt>
-        <dd class="col-sm-10">
-           @Model.PrintFiles.Count()
-        </dd>
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Print Project
+                    </h4>
+                </div>
 
-    </dl>
+                <div class="card-body p-4 text-center">
+
+                    <h3 class="fw-bold text-danger mb-3">Are you sure?</h3>
+                    <p class="lead text-muted mb-4">
+                        Do you really want to delete <strong class="text-light-emphasis">@Model.Name</strong>?
+                        <br />
+                        <span class="fs-6 text-danger">This will delete the Print and <strong>@Model.PrintFiles.Count() associated files</strong> permanently.</span>
+                    </p>
+
+                    <div class="card border-0 mb-4 text-start">
+                        <div class="row g-0">
+                            <div class="col-md-4 d-flex align-items-center justify-content-center bg-secondary-subtle rounded" style="min-height: 200px;">
+                                @if (previewFile != null && !string.IsNullOrEmpty(previewFile.FilePath))
+                                {
+                                    <img src="@previewFile.FilePath" class="d-block w-100 h-100 object-fit-scale" style="max-height: 150px; object-fit: contain;" />
+                                }
+                                else
+                                {
+                                    <i class="bi bi-box-seam-fill text-secondary" style="font-size: 4rem;"></i>
+                                }
+                            </div>
+
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-4 text-secondary fw-bold text-uppercase small">Print Name</div>
+                                        <div class="col-8 fw-bold">@Html.DisplayFor(model => model.Name)</div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-4 text-secondary fw-bold text-uppercase small">Files</div>
+                                        <div class="col-8">
+                                            <span class="badge bg-secondary">@Model.PrintFiles.Count() items</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 text-secondary fw-bold text-uppercase small">Description</div>
+                                        <div class="col-8 text-muted small text-truncate">
+                                            @if (!string.IsNullOrEmpty(Model.Description))
+                                            {
+                                                @Model.Description
+                                            }
+                                            else
+                                            {
+                                                <span class="fst-italic">No description</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete" class="d-flex justify-content-center gap-3">
+                        <input type="hidden" asp-for="Id" />
+
+                        @* Navigation Logic *@
+                        @if (!string.IsNullOrEmpty(ViewBag.Referer?.ToString()))
+                        {
+                            <a href="@ViewBag.Referer" class="btn btn-outline-secondary px-4">Cancel</a>
+                        }
+                        else
+                        {
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+                        }
+
+                        <input type="submit" value="Yes, Delete Everything" class="btn btn-danger px-4 shadow-sm" />
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        @if (!string.IsNullOrEmpty(ViewBag.Referer))
-        {
-            <a href="@ViewBag.Referer">No Go Back!</a>
-        }
-        else
-        {
-            <a href="/home">No Go Back!</a>
-        }
-    </form>
-

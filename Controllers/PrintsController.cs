@@ -22,30 +22,64 @@ namespace PrintBed.Controllers
         }
 
         // GET: Prints/Details/5
-        public async Task<IActionResult> Details(string id, [FromQuery(Name = "page")] int page = 1)
+        public async Task<IActionResult> Details(string id, string search = "", string type = "", [FromQuery(Name = "page")] int page = 1)
         {            
             int itemsPerPage = 8;
-            int totalPages = 0;
-            
-            PrintDetailPage printDetailPage = new PrintDetailPage();
 
-            var print = await _context.Print.Include( m=>m.PrintFiles.OrderBy(o=>o.FileExtension) ).ThenInclude(m=>m.FileType).Include(m=>m.PrintTags).ThenInclude(m=>m.Tag)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var print = await _context.Print.Include(m => m.PrintTags).ThenInclude(m => m.Tag).FirstOrDefaultAsync(m => m.Id == id);
+
             if (print == null)
             {
                 return NotFound();
             }
-            totalPages = (int)Math.Ceiling((double)print.PrintFiles.Count() / itemsPerPage);
-            page = page - 1;
-            page = page <= 0 || page >= totalPages ? 0 : page; //limit pages to our total pages and make page 1 = page 0
-            printDetailPage.Print = print;
-            printDetailPage.Files = print.PrintFiles.Skip(page*itemsPerPage).Take(itemsPerPage).ToList();
 
-            printDetailPage.totalPages = totalPages;
-            printDetailPage.currentPage = page+1;
+            var fileQuery = _context.PrintFile.Include(f => f.FileType).Where(f => f.PrintId == id);
 
-            SelectList FileTypesList = new SelectList(_context.FileType, "Id", "Name", "0");      
-            
+            if (!string.IsNullOrEmpty(search))
+            {
+                // Case-insensitive search
+                fileQuery = fileQuery.Where(f => f.DisplayName.ToLower().Contains(search.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(type) && type != "all")
+            {
+                // Exact match on extension (e.g. ".stl")
+                fileQuery = fileQuery.Where(f => f.FileExtension == type);
+            }
+
+            //Calculate Counts & Pages based on the FILTERED results
+            int totalFiles = await fileQuery.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalFiles / itemsPerPage);
+
+            if (page < 1) page = 1;
+            if (totalPages > 0 && page > totalPages) page = totalPages;
+
+            var paginatedFiles = await fileQuery
+                .OrderBy(o => o.FileExtension)
+                .ThenBy(o => o.DisplayName)
+                .Skip((page - 1) * itemsPerPage)
+                .Take(itemsPerPage)
+                .ToListAsync();
+
+            //get distinct file extensions for filter dropdown
+            var fileExts = await _context.PrintFile
+                .Where(f => f.PrintId == id)
+                .OrderBy(f => f.FileExtension)
+                .Select(f => f.FileExtension)                
+                .Distinct()
+                .ToListAsync();
+
+            PrintDetailPage printDetailPage = new PrintDetailPage
+            {
+                Print = print,
+                Files = paginatedFiles,
+                FileExts = fileExts,
+                totalPages = totalPages,
+                currentPage = page,
+                CurrentSearch = search,
+                CurrentType = type
+            };
+
+            SelectList FileTypesList = new SelectList(_context.FileType, "Id", "Name", "0");
             ViewData["FileTypesList"] = FileTypesList;
             ViewData["Referer"] = Request.Headers["Referer"];
 
@@ -71,7 +105,7 @@ namespace PrintBed.Controllers
             string Id = "new";
             while (Id == "new")
             {
-                Id = IDGen.GetBase36(8);
+                Id = IdGen.GetBase36(8);
                 if(_context.Print.Any(o => o.Id == Id))
                 {
                     Id = "new";
