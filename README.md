@@ -3,7 +3,8 @@
 printBed is a self-hosted asset management app designed to help users efficiently sort through a large number of 3D printer model assets. With printBed, you can organize, search, and categorize your 3D printer models, making it easier to find the right model for your printing needs.
 
 > [!CAUTION]
-> printBed is currently a very early ***Alpha*** Use at your own risk. Some basic features are currently broken or may break in the future. 
+> **printBed is in early Alpha.** Use at your own risk. Features may be broken or unstable. Please report any bugs or issues [here](https://github.com/prosthetichead/printBed/issues).
+
 
 ## Features :nerd_face:	
 
