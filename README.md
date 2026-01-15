@@ -35,9 +35,9 @@ services:
 * Replace [Print Files Path] with local path for storing print files for example ~/mnt/storage/3d-prints
 
 ## Previews
-![image](https://github.com/prosthetichead/printBed/assets/1934681/acd72138-31ec-4347-8120-4e0929e7eef4)
+https://github.com/user-attachments/assets/22264c2f-4ed2-4af3-8f90-2dab5c7ac3a2
 
-https://github.com/prosthetichead/printBed/assets/1934681/57e1357a-4d37-4f53-916a-a306a1a6e82a
+https://github.com/user-attachments/assets/615c3851-fb94-4c9e-9519-8f827558b997
 
 ## Contributing
 While this is a personal project contributions to printBed are welcome! If you have suggestions for new features, improvements, or bug fixes, please submit an issue or pull request on GitHub. 
