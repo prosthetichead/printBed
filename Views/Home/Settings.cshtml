@@ -4,106 +4,192 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Settings</h1>
-<div class="mb-5 container">
 
-    <div class="row">
-        <div class="col">
-            <h3>Creators</h3>
-        </div>
-        <div class="col text-end"><a class="btn btn-success btn-sm simpleEditModal-btn" data-action="create" data-controller="Creators" data-title="Add New Creator" data-id="new">Add New Creator</a></div>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0 text-light">Settings</h1>
     </div>
-    <div class="row">
-        <div class="col-1 border">Image</div>
-        <div class="col-8 border">Name</div>
-        <div class="col-1 border">Prints</div>
-        <div class="col-2 border"></div>
-     </div>
-    @foreach(var creator in Model.Creators)
-    {
-        <div class="row">
-            <div class="col-1 border text-center"><img class="img-icon m-1" src="@creator.ImagePath" /></div>
-            <div class="col-8 border">
-                @creator.Name
-            </div>
-            <div class="col-1 border">@creator.Prints.Count</div>
-            <div class="col-2 border">
 
-                <a class="btn btn-outline-secondary btn-sm simpleEditModal-btn" data-action="edit" data-controller="Creators" data-title="Edit Creator @creator.Name" data-name="@creator.Name" data-id="@creator.Id"><span class="badge"><img class="img-icon-sm me-2" src="~/img/pencil.png" />Edit</span></a>
-                @if (creator.Id != "0")
-                {
-                    <a class="btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Creators" asp-route-id="@creator.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Delete" />Delete</span></a>
-                }
-            </div>
-         </div>
-    }
+    <div class="card shadow-sm mb-5 bg-dark border-secondary">
+        <div class="card-header border-secondary d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 text-info"><i class="bi bi-people-fill me-2"></i>Creators</h5>
+            <button class="btn btn-success btn-sm simpleEditModal-btn"
+                    data-action="create"
+                    data-controller="Creators"
+                    data-title="Add New Creator"
+                    data-id="new">
+                <i class="bi bi-plus-lg"></i> Add New
+            </button>
+        </div>
+
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-dark table-hover align-middle mb-0 table-fixed-head">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">Image</th>
+                        <th>Name</th>
+                        <th class="text-center" style="width: 100px;">Prints</th>
+                        <th class="text-end" style="width: 160px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var creator in Model.Creators)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                <img class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;" src="@creator.ImagePath" alt="@creator.Name" />
+                            </td>
+                            <td class="fw-bold text-light">
+                                @creator.Name
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary rounded-pill">@creator.Prints.Count</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group" role="group">
+                                    <a class="btn btn-outline-info btn-sm simpleEditModal-btn"
+                                       data-action="edit"
+                                       data-controller="Creators"
+                                       data-title="Edit Creator @creator.Name"
+                                       data-name="@creator.Name"
+                                       data-id="@creator.Id">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    @if (creator.Id != "0")
+                                    {
+                                        <a class="btn btn-outline-danger btn-sm"
+                                           asp-action="Delete"
+                                           asp-controller="Creators"
+                                           asp-route-id="@creator.Id">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer border-secondary text-muted small">
+            Total Creators: @Model.Creators.Count
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-5 bg-dark border-secondary">
+        <div class="card-header border-secondary d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 text-info"><i class="bi bi-bookmarks-fill me-2"></i>Categories</h5>
+            <button class="btn btn-success btn-sm simpleEditModal-btn"
+                    data-action="create"
+                    data-controller="Categories"
+                    data-title="Add New Category"
+                    data-id="new">
+                <i class="bi bi-plus-lg"></i> Add New
+            </button>
+        </div>
+
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-dark table-hover align-middle mb-0 table-fixed-head">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">Image</th>
+                        <th>Name</th>
+                        <th class="text-center" style="width: 100px;">Prints</th>
+                        <th class="text-end" style="width: 160px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                <img class="rounded" style="width: 32px; height: 32px; object-fit: cover;" src="@category.ImagePath" alt="@category.Name" />
+                            </td>
+                            <td class="fw-bold text-light">
+                                @category.Name
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary rounded-pill">@category.Prints.Count</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group" role="group">
+                                    <a class="btn btn-outline-info btn-sm simpleEditModal-btn"
+                                       data-action="edit"
+                                       data-controller="Categories"
+                                       data-title="Edit Category @category.Name"
+                                       data-name="@category.Name"
+                                       data-id="@category.Id">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    @if (category.Id != "0")
+                                    {
+                                        <a class="btn btn-outline-danger btn-sm"
+                                           asp-action="Delete"
+                                           asp-controller="Categories"
+                                           asp-route-id="@category.Id">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer border-secondary text-muted small">
+            Total Categories: @Model.Categories.Count
+        </div>
+    </div>
+
+
+    <div class="card shadow-sm mb-5 bg-dark border-secondary">
+        <div class="card-header border-secondary d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 text-info"><i class="bi bi-tags-fill me-2"></i>Tags</h5>
+        </div>
+
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-dark table-hover align-middle mb-0 table-fixed-head">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th class="text-center" style="width: 100px;">Prints</th>
+                        <th class="text-end" style="width: 160px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <tr>
+                            <td>
+                                <span class="badge border border-secondary text-light p-2">#@tag.Name</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary rounded-pill">@tag.PrintTags.Count</span>
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-outline-danger btn-sm"
+                                   asp-action="Delete"
+                                   asp-controller="Tags"
+                                   asp-route-id="@tag.Id">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer border-secondary text-muted small">
+            Total Tags: @Model.Tags.Count
+        </div>
+    </div>
+
 </div>
-
-<div class="mb-5 container">
-    <div class="row">
-        <div class="col">
-            <h3>Categories</h3>
-        </div>
-        <div class="col text-end"><a class="btn btn-success btn-sm  simpleEditModal-btn" data-action="create" data-controller="Categories" data-title="Add New Category" data-id="new">Add New Category</a></div>
-    </div>
-    <div class="row">
-        <div class="col-1 border">Image</div>
-        <div class="col-8 border">Name</div>
-        <div class="col-1 border">Prints</div>
-        <div class="col-2 border"></div>
-    </div>
-    @foreach(var category in Model.Categories)
-    {
-        <div class="row">
-            <div class="col-1 border text-center"><img class="img-icon m-1" src="@category.ImagePath" /></div>
-            <div class="col-8 border">
-                @category.Name
-            </div>
-            <div class="col-1 border">@category.Prints.Count</div>
-            <div class="col-2 border">
-                <a class="btn btn-outline-secondary btn-sm simpleEditModal-btn" data-action="edit" data-controller="Categories" data-title="Edit Creator @category.Name" data-name="@category.Name" data-id="@category.Id"><span class="badge"><img class="img-icon-sm me-2" src="~/img/pencil.png" />Edit</span></a>
-                @if (category.Id != "0")
-                {
-                    <a class="btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Categories" asp-route-id="@category.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Delete" />Delete</span></a>
-                }
-            </div>
-        </div>
-    }
-</div>
-
-<div class="mb-5 container">
-    <div class="row">
-        <div class="col">
-            <h3>Tags</h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-9 border">Name</div>
-        <div class="col-1 border">Prints</div>
-        <div class="col-2 border"></div>
-    </div>
-    @foreach (var tag in Model.Tags)
-    {
-        <div class="row">
-            <div class="col-9 border">
-                @tag.Name
-            </div>
-            <div class="col-1 border">@tag.PrintTags.Count</div>
-            <div class="col-2 border">
-                <a class="btn btn-outline-secondary btn-sm" asp-action="Delete" asp-controller="Tags" asp-route-id="@tag.Id"><span class="badge"><img src="/img/garbage.png" class="img-icon-sm me-2" alt="Delete" />Delete</span></a>
-            </div>
-        </div>
-    }
-</div>
-
 
 <partial name="Modal_simpleEditModal" />
 
-
 @section Scripts {
     <script>
-
-
-
     </script>
 }

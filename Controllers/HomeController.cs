@@ -27,9 +27,9 @@ namespace PrintBed.Controllers
         public async Task<IActionResult> Settings()
         {
             var settingsPage = new SettingsPage();
-            var categories = _context.Category.Include(i=>i.Prints);
-            var creators = _context.Creator.Include(i => i.Prints);
-            var tags = _context.Tag.Include(i => i.PrintTags);
+            var categories = _context.Category.Include(i => i.Prints).OrderBy(o => (o.Name ?? string.Empty).ToLower() );
+            var creators = _context.Creator.Include(i => i.Prints).OrderBy(o => (o.Name ?? string.Empty).ToLower());
+            var tags = _context.Tag.Include(i => i.PrintTags).OrderBy(o => (o.Name ?? string.Empty).ToLower());
 
             settingsPage.Categories = await categories.ToListAsync();
             settingsPage.Creators = await creators.ToListAsync();
