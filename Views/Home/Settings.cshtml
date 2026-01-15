@@ -17,6 +17,7 @@
                     data-action="create"
                     data-controller="Creators"
                     data-title="Add New Creator"
+                    data-showfilepicker="true"
                     data-id="new">
                 <i class="bi bi-plus-lg"></i> Add New
             </button>
@@ -83,6 +84,7 @@
                     data-action="create"
                     data-controller="Categories"
                     data-title="Add New Category"
+                    data-showfilepicker="true"
                     data-id="new">
                 <i class="bi bi-plus-lg"></i> Add New
             </button>
@@ -146,6 +148,15 @@
     <div class="card shadow-sm mb-5 bg-dark border-secondary">
         <div class="card-header border-secondary d-flex justify-content-between align-items-center py-3">
             <h5 class="mb-0 text-info"><i class="bi bi-tags-fill me-2"></i>Tags</h5>
+
+             <button class="btn btn-success btn-sm simpleEditModal-btn"
+                    data-action="Create"
+                    data-controller="Tags"
+                    data-title="Add New Tag"
+                    data-showfilepicker="false"
+                    data-id="new">
+                <i class="bi bi-plus-lg"></i> Add New
+            </button>
         </div>
 
         <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">

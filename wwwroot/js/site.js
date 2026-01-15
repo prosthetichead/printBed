@@ -13,7 +13,7 @@
             okBtn.dataset.controller = this.dataset.controller;
             okBtn.dataset.update = this.dataset.update;
 
-            const showFilePicker = this.dataset.showFilePicker === 'true'; // dataset stores strings
+            const showFilePicker = this.dataset.showfilepicker != 'false'; // dataset stores strings
             const title = this.dataset.title;
             const id = this.dataset.id;
             const name = this.dataset.name; 
@@ -31,6 +31,15 @@
             if (name) nameInput.value = name;
             else nameInput.value = '';
 
+            // Show or Hide File Picker
+            const fileInputGroup = document.getElementById('simpleEditModal-fileInputGroup');
+            if (fileInputGroup) {
+                if (showFilePicker) {
+                    fileInputGroup.style.display = 'block';
+                } else {
+                    fileInputGroup.style.display = 'none';
+                }
+            }
 
             // Show Bootstrap 5 Modal
             // We create a new instance or get the existing one
@@ -39,7 +48,7 @@
         });
     });
 
-    // --- 3. Modal OK Button Click ---
+    // Modal OK Button Click
     if (okBtn) {
         okBtn.addEventListener("click", function () {
             const name = document.getElementById('simpleEditModal-name').value;
@@ -69,9 +78,7 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log(data);
-
-                    // Check if target element exists
-                    // Note: querySelector requires the ID to include '#' (e.g. '#mySelect')
+                    
                     const targetSelect = document.querySelector(updateSelectId);
 
                     if (targetSelect) {
