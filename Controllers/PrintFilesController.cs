@@ -48,37 +48,13 @@ namespace PrintBed.Controllers
             return View(printFile);
         }
 
-        //// GET: PrintFiles/Create
-        //public IActionResult Create()
-        //{
-        //    ViewData["PrintId"] = new SelectList(_context.Print, "Id", "Id");
-        //    return View();
-        //}
-
-        //// POST: PrintFiles/Create
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,Name,Description,Type,PrintId")] PrintFile printFile)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(printFile);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    ViewData["PrintId"] = new SelectList(_context.Print, "Id", "Id", printFile.PrintId);
-        //    return View(printFile);
-        //}
-
 
 
         // POST: PrintFiles/FileUpload
         [HttpPost]
-        public async Task<IActionResult> FileUpload(IFormFile uploadedFile, string printId)
+        public async Task<IActionResult> FileUpload(List<IFormFile> uploadedFiles, string printId)
         {
-            if (uploadedFile != null)
+            if (uploadedFiles != null && uploadedFiles.Count > 0 && !string.IsNullOrEmpty(printId))
             {
                 //get the print details and work out where we need to put this file
                 Print? print = _context.Print.Where(w => w.Id == printId).Include(p => p.Creator).Include(p => p.Category).FirstOrDefault();
@@ -87,53 +63,91 @@ namespace PrintBed.Controllers
                     return NotFound();
                 }
 
-                //setup and save a print file record for the file
-                PrintFile printFile = new PrintFile();
+                //Define the directory path (This is constant for all files in this batch)
+                string baseUploadPath = Path.Combine("/print-files",
+                    Helpers.SafeString.Convert(print.Category.Name),
+                    Helpers.SafeString.Convert(print.Creator.Name),
+                    Helpers.SafeString.Convert(print.Name));
 
-                var Id = "new";
-                while (Id == "new")
+                Directory.CreateDirectory(baseUploadPath);
+
+                //Loop through every file uploaded
+                foreach (var file in uploadedFiles)
                 {
-                    Id = IdGen.GetBase36(8);
-                    if (_context.PrintFile.Any(w => w.Id == Id))
+                    // Skip empty files if any
+                    if (file.Length == 0) continue;
+
+                    // Setup and save a print file record for the file
+                    PrintFile printFile = new PrintFile();
+
+                    var Id = "new";
+                    while (Id == "new")
                     {
-                        Id = "new";
+                        Id = IdGen.GetBase36(8);
+                        if (_context.PrintFile.Any(w => w.Id == Id))
+                        {
+                            Id = "new";
+                        }
                     }
+
+                    printFile.Id = Id;
+                    printFile.PrintId = printId;
+                    
+                    string safeFileName = Helpers.SafeString.Convert(file.FileName);
+                    string fullFilePath = Path.Combine(baseUploadPath, safeFileName);
+                    //Check if file exists, and loop until we find a unique name
+                    string finalFileName = safeFileName;
+                    if (System.IO.File.Exists(fullFilePath))
+                    {
+                        int counter = 1;
+                        string fileNameOnly = Path.GetFileNameWithoutExtension(safeFileName);
+                        string extension = Path.GetExtension(safeFileName);
+
+                        while (System.IO.File.Exists(fullFilePath))
+                        {
+                            // Create a new name like: "myFile_1.stl"
+                            finalFileName = $"{fileNameOnly}_{counter}{extension}";
+                            fullFilePath = Path.Combine(baseUploadPath, finalFileName);
+                            counter++;
+                        }
+                    }
+                    printFile.FileName = finalFileName;
+                    printFile.DisplayName = finalFileName; 
+                    printFile.FilePath = fullFilePath;
+                    printFile.FileSize = file.Length;
+                    printFile.FilePath = fullFilePath;
+
+                    string ext = Path.GetExtension(fullFilePath).Replace(".", "");
+                    printFile.FileExtension = ext;
+
+                    // File Type Logic
+                    var fileType = _context.FileType
+                        .Where(w => w.Extensions != null && w.Extensions.ToLower().Contains(ext))
+                        .FirstOrDefault();
+                    if (fileType != null)
+                    {
+                        printFile.FileTypeId = fileType.Id;
+                    }
+                    else
+                    {
+                        var defaultType = _context.FileType.FirstOrDefault(w => w.Id == "0");
+                        printFile.FileTypeId = defaultType != null ? defaultType.Id : "0";
+                    }
+                    
+                    using (Stream fileStream = new FileStream(fullFilePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileStream);
+                    }
+
+                    _context.PrintFile.Add(printFile);
                 }
 
-                printFile.Id = Id;
-                printFile.PrintId = printId;
-                printFile.DisplayName = uploadedFile.FileName;
-                printFile.FileName = Helpers.SafeString.Convert(uploadedFile.FileName);
-                printFile.FileTypeId = "0";
-                printFile.FileSize = uploadedFile.Length;
-
-                string filePath = Path.Combine("/print-files", Helpers.SafeString.Convert(print.Category.Name), Helpers.SafeString.Convert(print.Creator.Name), Helpers.SafeString.Convert(print.Name));
-                Directory.CreateDirectory(filePath);
-                filePath = Path.Combine(filePath, printFile.FileName);
-                printFile.FilePath = filePath;
-                string ext = Path.GetExtension(filePath).Replace(".", "");
-                printFile.FileExtension = ext;
-
-                var fileType = _context.FileType.Where(w => w.Extensions != null && w.Extensions.ToLower().Contains(ext)).FirstOrDefault();
-                if (fileType != null)
-                {
-                    printFile.FileTypeId = fileType.Id;
-                }
-                else
-                {
-                    printFile.FileTypeId = _context.FileType.Where(w => w.Id == "0").FirstOrDefault().Id;
-                }
-
-                using (Stream fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await uploadedFile.CopyToAsync(fileStream);
-                }
-
-                _context.PrintFile.Add(printFile);
-                _context.SaveChanges();
+                // Save all database changes
+                await _context.SaveChangesAsync();
 
                 return Ok();
             }
+
             return Ok();
         }
 
