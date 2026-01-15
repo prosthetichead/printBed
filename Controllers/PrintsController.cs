@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PrintBed.Helpers;
 using PrintBed.Models;
+using System.IO;
+using System.IO.Compression;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
@@ -19,6 +21,46 @@ namespace PrintBed.Controllers
         public PrintsController(DatabaseContext context)
         {
             _context = context;
+        }
+
+        public async Task<IActionResult> Download(string id)
+        {            
+            var print = await _context.Print
+                .Include(i => i.PrintFiles)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (print == null)
+            {
+                return NotFound();
+            }
+
+            if (print.PrintFiles == null || !print.PrintFiles.Any())
+            {
+                return BadRequest("No files found for this print job.");
+            }
+
+            var memoryStream = new MemoryStream();
+                        
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, leaveOpen: true))
+            {
+                foreach (var file in print.PrintFiles)
+                {
+                    if (!System.IO.File.Exists(file.FilePath)) continue;
+
+                    var entry = archive.CreateEntry(Path.GetFileName(file.FilePath));
+
+                    using (var entryStream = entry.Open())
+                    using (var fileStream = System.IO.File.OpenRead(file.FilePath))
+                    {
+                        await fileStream.CopyToAsync(entryStream);
+                    }
+                }
+            }
+
+            memoryStream.Position = 0;
+
+            string downloadName = $"Print_{print.Id}.zip";
+            return File(memoryStream, "application/zip", downloadName);
         }
 
         // GET: Prints/Details/5
