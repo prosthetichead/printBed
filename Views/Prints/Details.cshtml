@@ -6,13 +6,16 @@
 }
 
 
-<div id="drop-zone-fullpage">
-    <div class="d-flex justify-content-center">
-        <div id="beforeDrop" class="loading-content">Drop Files to Upload</div>
-        <div id="afterDrop" style="width:500px; visibility: hidden;">
-            <div class="progress" role="progressbar" style="width:500px">
-                <div id="progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%">75%</div>
-            </div>
+<div id="drop-zone-fullpage" style="visibility: hidden; display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: rgba(0,0,0,0.8); flex-direction: column; justify-content: center; align-items: center;">
+
+    <div id="beforeDrop" class="text-white text-center" style="pointer-events: none;">
+        <h1 class="display-4"><i class="bi bi-cloud-arrow-up"></i></h1>
+        <h3>Drop Files to Upload</h3>
+    </div>
+
+    <div id="afterDrop" style="width:500px; display: none; pointer-events: none;">
+        <div class="progress" role="progressbar" style="height: 25px;">
+            <div id="progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%">0%</div>
         </div>
     </div>
 </div>
@@ -79,47 +82,44 @@
             </h2>
             <div id="panelFiles" class="accordion-collapse collapse show">
                 <div class="accordion-body">
+                    <form method="get" asp-action="Details" asp-controller="Prints" asp-route-id="@Model.Print.Id">
+                        <div class="card bg-dark border-secondary mb-3 p-2">
+                            <div class="row g-2 align-items-center">
 
-                    
-
-                            <form method="get" asp-action="Details" asp-controller="Prints" asp-route-id="@Model.Print.Id">
-                                <div class="card bg-dark border-secondary mb-3 p-2">
-                                    <div class="row g-2 align-items-center">
-
-                                        <div class="col-12 col-md-4">
-                                            <div class="input-group input-group-sm">
-                                                <span class="input-group-text bg-secondary border-secondary text-light"><i class="bi bi-search"></i>Search</span>
-                                                <input type="text" name="search" class="form-control bg-dark text-light border-secondary"
-                                                       placeholder="Filename..." value="@Model.CurrentSearch" onchange="this.form.submit()">
-                                            </div>
-                                        </div>
-
-                                        <div class="col-6 col-md-3">
-                                            <select name="type" class="form-select form-select-sm bg-dark text-light border-secondary" onchange="this.form.submit()">
-                                                <option value="all">All Types</option>
-                                                @* You might need to populate this list from ViewBag or a separate helper if the files are paginated *@
-                                                @foreach (var ext in Model.FileExts)
-                                                {
-                                                    <option value="@ext" selected="@(Model.CurrentType == ext)">@ext</option>
-                                                }
-                                            </select>
-                                        </div>
-
-                                        <div class="col-6 col-md-5 d-flex justify-content-end gap-2">
-                                            <div class="btn-group" role="group">
-                                                <input type="radio" class="btn-check" name="viewToggle" id="btnRadioGrid" autocomplete="off" checked onclick="toggleView('grid')">
-                                                <label class="btn btn-outline-secondary btn-sm" for="btnRadioGrid"><i class="bi bi-grid-fill"></i></label>
-
-                                                <input type="radio" class="btn-check" name="viewToggle" id="btnRadioList" autocomplete="off" onclick="toggleView('list')">
-                                                <label class="btn btn-outline-secondary btn-sm" for="btnRadioList"><i class="bi bi-list-ul"></i></label>
-                                            </div>
-                                            <button type="button" class="btn btn-primary btn-sm" onclick="showFilePick();">+ Upload</button>
-                                        </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-secondary border-secondary text-light"><i class="bi bi-search"></i>Search</span>
+                                        <input type="text" name="search" class="form-control bg-dark text-light border-secondary"
+                                                placeholder="Filename..." value="@Model.CurrentSearch" onchange="this.form.submit()">
                                     </div>
                                 </div>
-                            </form>
+
+                                <div class="col-6 col-md-3">
+                                    <select name="type" class="form-select form-select-sm bg-dark text-light border-secondary" onchange="this.form.submit()">
+                                        <option value="all">All Types</option>
+                                        @* You might need to populate this list from ViewBag or a separate helper if the files are paginated *@
+                                        @foreach (var ext in Model.FileExts)
+                                        {
+                                            <option value="@ext" selected="@(Model.CurrentType == ext)">@ext</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-6 col-md-5 d-flex justify-content-end gap-2">
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" name="viewToggle" id="btnRadioGrid" autocomplete="off" checked onclick="toggleView('grid')">
+                                        <label class="btn btn-outline-secondary btn-sm" for="btnRadioGrid"><i class="bi bi-grid-fill"></i></label>
+
+                                        <input type="radio" class="btn-check" name="viewToggle" id="btnRadioList" autocomplete="off" onclick="toggleView('list')">
+                                        <label class="btn btn-outline-secondary btn-sm" for="btnRadioList"><i class="bi bi-list-ul"></i></label>
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="showFilePick();">+ Upload</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                     <form id="uploadForm" enctype="multipart/form-data">
-                        <input class="disabled" type='file' id="uploadedFile" name="uploadedFile" style="display:none" />
+                        <input class="disabled" type='file' id="uploadedFile" name="uploadedFiles" multiple style="display:none" />
                         <input type="hidden" id="printId" name="printId" value="@Model?.Print.Id" />
                     </form>
 
@@ -328,8 +328,8 @@
 
             //show dropzone and show afterDrop and hide before drop
             dropZone.style.visibility = "visible";
-            afterDrop.style.visibility = "visible";
-            beforeDrop.style.visibility = "hidden";
+            afterDrop.style.display = "block";
+            beforeDrop.style.display = "none";
 
             // Increase the timeout for the form submission
             form.timeout = 0; // 0 means no timeout
