@@ -50,35 +50,35 @@ namespace PrintBed.Controllers
             int itemsPerPage = 12;
             int totalPages = 0;
 
+            var prints = _context.Print
+                .Include(m => m.Category)
+                .Include(m => m.Creator)
+                .Include(m => m.PrintFiles).ThenInclude(m => m.FileType)
+                .Include(m => m.PrintTags).ThenInclude(m => m.Tag)
+                .AsQueryable();
 
-            //var lastHomeURL = HttpContext.Session.GetString("lastHomeURL");
-            //if (HttpContext.Request.QueryString.HasValue)
-            //{
-            //    HttpContext.Session.SetString("lastHomeURL", HttpContext.Request.GetDisplayUrl());
-            //}
-            //else if (!HttpContext.Request.QueryString.HasValue && lastHomeURL != null)
-            //{
-            //    return Redirect(lastHomeURL);
-            //}
+            prints = prints.Where(w =>
+                ((creators.Count() > 0 && creators.Contains(w.CreatorId)) || creators.Count() == 0) &&
+                ((categories.Count() > 0 && categories.Contains(w.CategoryId)) || categories.Count() == 0)
+            );
 
-            var prints = _context.Print.Include(m => m.Category).Include(m => m.Creator).Include(m=>m.PrintFiles).ThenInclude(m=>m.FileType).Include(m=>m.PrintTags).ThenInclude(m=> m.Tag)
-                .Where(w => 
-                    ((creators.Count()>0 && creators.Contains(w.CreatorId)) || creators.Count() == 0)  &&
-                    ((categories.Count()>0 && categories.Contains(w.CategoryId)) || categories.Count() == 0) &&
-                    ((tags.Count()>0 && w.PrintTags.Any(y=> tags.Contains(y.TagId))) || tags.Count() == 0) 
-                );
+            if (tags != null && tags.Any())
+            {
+                foreach (var requiredTagId in tags)
+                {
+                    prints = prints.Where(p => p.PrintTags.Any(pt => pt.TagId == requiredTagId));
+                }
+            }
 
-            if(!string.IsNullOrEmpty(search))
+
+            if (!string.IsNullOrEmpty(search))
             {
                 List<string> searchStrings = search.ToLower().Split(' ').ToList();
 
                 prints = prints.Where(w=> searchStrings.Any(y=> w.Name.Contains(y)));
-            }
-            
+            }            
 
             prints = prints.OrderBy(sort + " " + direction);
-
-
 
             totalPages = (int)Math.Ceiling((double)prints.Count() / itemsPerPage);
             page = page - 1;
